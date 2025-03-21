@@ -2,18 +2,18 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{91E5AD39-7402-4D0A-BB0F-9B21C48283F9}"
 	ProjectSection(SolutionItems) = preProject
-		..\LICENSE = ..\LICENSE
-		..\README.md = ..\README.md
-		..\.gitignore = ..\.gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+		.gitignore = .gitignore
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AliFlux", "AliFlux", "{524E5240-2A32-4B31-8329-A6A3CB0ADC5F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renderers", "Renderers", "{E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Renderers.Mvt.AliFlux.Tests", "AliFlux\VexTile.Renderers.Mvt.AliFlux.Tests\VexTile.Renderers.Mvt.AliFlux.Tests.csproj", "{B1E58241-A026-4DF9-8EC6-7613CC309591}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Renderers.Mvt.AliFlux.Tests", "source\AliFlux\VexTile.Renderers.Mvt.AliFlux.Tests\VexTile.Renderers.Mvt.AliFlux.Tests.csproj", "{B1E58241-A026-4DF9-8EC6-7613CC309591}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Renderer.Mvt.AliFlux", "AliFlux\VexTile.Renderers.Mvt.AliFlux\VexTile.Renderer.Mvt.AliFlux.csproj", "{8581D51C-7311-41B0-A2C2-AE479F0844AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Renderer.Mvt.AliFlux", "source\AliFlux\VexTile.Renderers.Mvt.AliFlux\VexTile.Renderer.Mvt.AliFlux.csproj", "{8581D51C-7311-41B0-A2C2-AE479F0844AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
