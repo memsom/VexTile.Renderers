@@ -1,4 +1,12 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Copyright>Copyright (c) 2025 Matt Emson</Copyright>
+        <PackageProjectUrl>https://github.com/memsom/VexTile.Renderers</PackageProjectUrl>
+        <PackageLicense>https://github.com/memsom/VexTile.Renderers/blob/main/LICENSE</PackageLicense>
+        <RepositoryUrl>https://github.com/memsom/VexTile.Renderers</RepositoryUrl>
+        <Version>1.0.1</Version>
+    </PropertyGroup>
+
     <!-- Common Project Properties -->
     <PropertyGroup>
         <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>

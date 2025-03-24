@@ -1,37 +1,56 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>disable</Nullable>
         <Title>VexTile AliFlux Mapbox Vector Tile Renderer</Title>
-        <Copyright>Copyright (c) 2018-2025, Ali Ashraf with mobile support by Matt Emson</Copyright>
-        <PackageProjectUrl>https://github.com/memsom/VexTile.Renderers</PackageProjectUrl>
-        <PackageLicense>https://github.com/memsom/VexTile.Renderers/blob/main/LICENSE</PackageLicense>
-        <RepositoryUrl>https://github.com/memsom/VexTile.Renderers</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Version>1.0.0</Version>
         <Description>A comprehensive Mapbox Vector Tile Renderer for .Net/C#, based on the AliFlux.VectorTileRenderer</Description>
         <IsPackable>true</IsPackable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>VexTile.Renderer.Mvt.AliFlux</PackageId>
+        <PackageIcon>logo-small.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
         <None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\..\images\logo-small.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
+
     <ItemGroup>
-        <Compile Remove="Sources\**"/>
-        <EmbeddedResource Remove="Sources\**"/>
-        <None Remove="Sources\**"/>
-        <None Remove="Styles\colorful-style.json"/>
-        <EmbeddedResource Include="Styles\colorful-style.json"/>
-    </ItemGroup>
-    <ItemGroup>
-        <None Remove="Styles\aliflux-style.json"/>
+        <!-- JSON Styles -->
+
+        <!-- definitions -->
+        <None Remove="Styles\default-style.json"/>
         <None Remove="Styles\basic-style.json"/>
         <None Remove="Styles\bright-style.json"/>
         <None Remove="Styles\dark-style.json"/>
+        <None Remove="Styles\hybrid-style.json"/>
+        <None Remove="Styles\liberty-style.json"/>
+        <None Remove="Styles\light-style.json"/>
+        <None Remove="Styles\positron-style.json"/>
+        <None Remove="Styles\runner-style.json"/>
+        <None Remove="Styles\streets-style.json"/>
+        <None Remove="Styles\toner-style.json"/>
+        <None Remove="Styles\colorful-style.json"/>
+        <!-- embedded resources -->
+        <EmbeddedResource Include="Styles\default-style.json"/>
+        <EmbeddedResource Include="Styles\basic-style.json"/>
+        <EmbeddedResource Include="Styles\bright-style.json"/>
+        <EmbeddedResource Include="Styles\dark-style.json"/>
+        <EmbeddedResource Include="Styles\liberty-style.json"/>
+        <EmbeddedResource Include="Styles\light-style.json"/>
+        <EmbeddedResource Include="Styles\positron-style.json"/>
+        <EmbeddedResource Include="Styles\runner-style.json"/>
+        <EmbeddedResource Include="Styles\streets-style.json"/>
+        <EmbeddedResource Include="Styles\toner-style.json"/>
+        <EmbeddedResource Include="Styles\colorful-style.json"/>
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Fonts -->
+
+        <!-- definitions -->
         <None Remove="Styles\fonts\Metropolis-Black-Italic.otf"/>
         <None Remove="Styles\fonts\Metropolis-Black.otf"/>
         <None Remove="Styles\fonts\Metropolis-Bold-Italic.otf"/>
@@ -96,30 +115,8 @@
         <None Remove="Styles\fonts\Roboto-Regular.ttf"/>
         <None Remove="Styles\fonts\Roboto-Thin-Italic.ttf"/>
         <None Remove="Styles\fonts\Roboto-Thin.ttf"/>
-        <None Remove="Styles\hybrid-style.json"/>
-        <None Remove="Styles\liberty-style.json"/>
-        <None Remove="Styles\light-style.json"/>
-        <None Remove="Styles\positron-style.json"/>
-        <None Remove="Styles\runner-style.json"/>
-        <None Remove="Styles\streets-style.json"/>
-        <None Remove="Styles\toner-style.json"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Include="Sources\IBasicTileSource.cs"/>
-        <Compile Include="Sources\IVectorTileSource.cs"/>
-        <Compile Include="Sources\MbTilesSource.cs"/>
-        <Compile Include="Sources\TileSourceException.cs"/>
-        <Compile Include="Sources\VectorMbTilesSource.cs"/>
-        <Compile Include="Sources\PbfTileSource.cs"/>
-        <Compile Include="Sources\RasterTileSource.cs"/>
-        <Compile Include="Sources\Tables\MetaData.cs"/>
-        <Compile Include="Sources\Tables\Tiles.cs"/>
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="Styles\aliflux-style.json"/>
-        <EmbeddedResource Include="Styles\basic-style.json"/>
-        <EmbeddedResource Include="Styles\bright-style.json"/>
-        <EmbeddedResource Include="Styles\dark-style.json"/>
+
+        <!-- embedded resources -->
         <EmbeddedResource Include="Styles\fonts\Metropolis-Black-Italic.otf"/>
         <EmbeddedResource Include="Styles\fonts\Metropolis-Black.otf"/>
         <EmbeddedResource Include="Styles\fonts\Metropolis-Bold-Italic.otf"/>
@@ -184,27 +181,23 @@
         <EmbeddedResource Include="Styles\fonts\Roboto-Regular.ttf"/>
         <EmbeddedResource Include="Styles\fonts\Roboto-Thin-Italic.ttf"/>
         <EmbeddedResource Include="Styles\fonts\Roboto-Thin.ttf"/>
-        <EmbeddedResource Include="Styles\hybrid-style.json"/>
-        <EmbeddedResource Include="Styles\liberty-style.json"/>
-        <EmbeddedResource Include="Styles\light-style.json"/>
-        <EmbeddedResource Include="Styles\positron-style.json"/>
-        <EmbeddedResource Include="Styles\runner-style.json"/>
-        <EmbeddedResource Include="Styles\streets-style.json"/>
-        <EmbeddedResource Include="Styles\toner-style.json"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="sqlite-net-pcl" Version="1.9.172"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-        <PackageReference Include="NLog" Version="5.0.0"/>
-        <PackageReference Include="SkiaSharp" Version="2.88.7"/>
-        <PackageReference Include="Svg" Version="3.4.7"/>
-        <PackageReference Include="Svg.Skia" Version="1.0.0.3"/>
-        <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1"/>
-        <PackageReference Include="VexTile.Clipper" Version="6.4.0"/>
-        <PackageReference Include="VexTile.Mapbox.VectorTile.VectorTileReader" Version="1.0.6"/>
-        <PackageReference Include="VexTile.Mapbox.VectorTile.PbfReader" Version="1.0.6"/>
-        <PackageReference Include="VexTile.Mapbox.VectorTile.Geometry" Version="1.0.6"/>
-        <PackageReference Include="VexTile.Mapbox.VectorTile.ExtensionMethods" Version="1.0.6"/>
+        <PackageReference Include="sqlite-net-pcl"/>
+        <PackageReference Include="Newtonsoft.Json"/>
+        <PackageReference Include="NLog"/>
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="Svg"/>
+        <PackageReference Include="Svg.Skia"/>
+        <PackageReference Include="System.Text.RegularExpressions"/>
+        <PackageReference Include="VexTile.Clipper"/>
+        <PackageReference Include="VexTile.Mapbox.VectorTile.VectorTileReader"/>
+        <PackageReference Include="VexTile.Mapbox.VectorTile.PbfReader"/>
+        <PackageReference Include="VexTile.Mapbox.VectorTile.Geometry"/>
+        <PackageReference Include="VexTile.Mapbox.VectorTile.ExtensionMethods"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\VexTile.Common\VexTile.Common.csproj"/>
     </ItemGroup>
 
     <PropertyGroup>

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
@@ -7,29 +7,26 @@
         <Nullable>enable</Nullable>
         <RootNamespace>VexTile.TileSource.Mvt</RootNamespace>
         <Title>VexTile Mapbox Vector Tile Source</Title>
-        <Copyright>Copyright (c) 2025 Matt Emson</Copyright>
-        <PackageProjectUrl>https://github.com/memsom/VexTile.Renderers</PackageProjectUrl>
-        <PackageLicense>https://github.com/memsom/VexTile.Renderers/blob/main/LICENSE</PackageLicense>
-        <RepositoryUrl>https://github.com/memsom/VexTile.Renderers</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Version>1.0.0</Version>
         <Description>A Mapsui compatible Mapbox Vector Tile TileSource based on BruTile.MbTiles </Description>
         <IsPackable>true</IsPackable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>VexTile.TileSource.Mvt</PackageId>
+        <PackageIcon>logo-small.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\..\..\images\logo-small.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\AliFlux\VexTile.Renderers.Mvt.AliFlux\VexTile.Renderer.Mvt.AliFlux.csproj"/>
+        <ProjectReference Include="..\..\AliFlux\VexTile.Renderers.Mvt.AliFlux\VexTile.Renderer.Mvt.AliFlux.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="BruTile" Version="5.0.6"/>
-        <PackageReference Include="BruTile.MbTiles" Version="5.0.6"/>
+        <PackageReference Include="BruTile" />
+        <PackageReference Include="BruTile.MbTiles" />
     </ItemGroup>
 
     <PropertyGroup>

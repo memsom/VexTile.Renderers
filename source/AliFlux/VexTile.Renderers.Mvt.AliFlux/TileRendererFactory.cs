@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
+using VexTile.Renderer.Mvt.AliFlux.Sources;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
 
@@ -46,9 +47,9 @@ public static class TileRendererFactory
             {
                 if (layer.Source == null || layer.Source.Type == "vector")
                 {
-                    if (!vectorTileCache.ContainsKey(layer.Source) && layer.Source.Provider is Sources.IVectorTileSource source)
+                    if (!vectorTileCache.ContainsKey(layer.Source) && layer.Source.Provider is IVectorTileSource source)
                     {
-                        var tile = await source.GetVectorTileAsync(x, y, (int)zoom);
+                        VectorTile tile = await source.GetVectorTileAsync(x, y, (int)zoom);
 
                         if (tile == null)
                         {

@@ -1,6 +1,8 @@
-﻿using SQLite;
+﻿#nullable disable
 
-namespace VexTile.Renderer.Mvt.AliFlux.Sources.Tables;
+using SQLite;
+
+namespace VexTile.Common.Tables;
 
 [Table("metadata")]
 public class MetaData

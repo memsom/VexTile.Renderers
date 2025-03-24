@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace VexTile.Renderer.Mvt.AliFlux.Sources.Tables;
+namespace VexTile.Common.Tables;
 
 [Table("tiles")]
 public class Tiles
@@ -12,5 +12,5 @@ public class Tiles
     [Column("zoom_level")]
     public int Zoom { get; set; }
     [Column("tile_data")]
-    public byte[] TileData { get; set; }
+    public byte[]? TileData { get; set; }
 }

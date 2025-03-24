@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NLog;
 using SkiaSharp;
+using VexTile.Common;
+using VexTile.Common.Enums;
+using VexTile.Common.Sources;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
@@ -40,7 +43,7 @@ public class VectorStyle : IVectorStyle
             else
             {
 #if DEBUG
-                json = VectorStyleReader.GetStyle(VectorStyleKind.Basic); // fallback use who know what will happen...
+                json = VectorStyleReader.GetStyle(VectorStyleKind.Default); // fallback use who know what will happen...
                 log.Debug("The custom style was not set, so we have fallen back to Basic.");
 #else
                 throw new VectorStyleException("FATAL ERROR: Style could not be loaded!");

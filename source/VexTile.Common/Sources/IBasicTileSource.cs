@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace VexTile.Renderer.Mvt.AliFlux.Sources;
+﻿namespace VexTile.Common.Sources;
 
 public interface IBasicTileSource
 {
