@@ -6,9 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SQLite;
+using VexTile.Common.Tables;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.GlobalMercator;
-using VexTile.Renderer.Mvt.AliFlux.Sources.Tables;
 
 namespace VexTile.Renderer.Mvt.AliFlux.Sources;
 

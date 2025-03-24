@@ -1,9 +1,11 @@
+<img src="images/logo.png"/>
+
 # VexTile.Renderers
 VexTile is a MapBox VectorTile rendering engine suite. 
 
 This project aims to take the various renderers that are currently inaccessible to mapping engines like [Mapsui](https://github.com/Mapsui/Mapsui) and provide a drop in tile source for offline (and in the future online) maps tiles in Mapbox Vector Tile format.
 
-The current inplementation is a continuation of the [AliFlux/VectorTileRenderer](https://github.com/AliFlux/VectorTileRenderer) written by Ali Ashraf. This engine is capable of rendering tiles, but currently needs work to improve the rendering quality.
+The current implementation is a continuation of the [AliFlux/VectorTileRenderer](https://github.com/AliFlux/VectorTileRenderer) written by Ali Ashraf. This engine is capable of rendering tiles, but currently needs work to improve the rendering quality.
 
 In the future we hope to look at getting other engines integrated. This is an ongoing efort and we are very hopeful that others will contribute.
 

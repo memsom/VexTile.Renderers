@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
+using VexTile.Common.Sources;
 using VexTile.Mapbox.VectorTile.Geometry;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using MbVectorTileFeature = VexTile.Mapbox.VectorTile.VectorTileFeature;

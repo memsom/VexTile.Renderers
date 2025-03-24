@@ -1,4 +1,5 @@
-﻿using VexTile.Renderer.Mvt.AliFlux.Sources;
+﻿using VexTile.Common.Sources;
+using VexTile.Renderer.Mvt.AliFlux.Sources;
 
 namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
 

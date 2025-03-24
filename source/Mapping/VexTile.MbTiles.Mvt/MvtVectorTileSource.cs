@@ -3,6 +3,7 @@ using BruTile;
 using BruTile.MbTiles;
 using BruTile.Predefined;
 using SQLite;
+using VexTile.Common.Enums;
 using VexTile.Renderer.Mvt.AliFlux;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
@@ -47,7 +48,7 @@ public class MvtVectorTileSource : ITileSource
     ///  <param name="styleProviderName">the name of the style's provider name</param>
     public MvtVectorTileSource(SQLiteConnectionString connectionString, ITileSchema? schema = null, MbTilesType type = MbTilesType.None,
         bool determineZoomLevelsFromTilesTable = false, bool determineTileRangeFromTilesTable = false, 
-        VectorStyleKind styleKind = VectorStyleKind.Basic, string styleProviderName = "openstreetmap")
+        VectorStyleKind styleKind = VectorStyleKind.Default, string styleProviderName = "openstreetmap")
     {
         if (!File.Exists(connectionString.DatabasePath))
             throw new FileNotFoundException($"The mbtiles file does not exist: '{connectionString.DatabasePath}'", connectionString.DatabasePath);

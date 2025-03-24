@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SQLite;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
+using VexTile.Common;
+using VexTile.Common.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
 
 namespace VexTile.Renderer.Mvt.AliFlux;

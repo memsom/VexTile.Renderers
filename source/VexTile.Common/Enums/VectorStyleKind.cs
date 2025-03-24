@@ -1,7 +1,8 @@
-﻿namespace VexTile.Renderer.Mvt.AliFlux.Enums;
+﻿namespace VexTile.Common.Enums;
 
 public enum VectorStyleKind
 {
+    Default,
     Basic,
     Bright,
     Dark,
@@ -9,7 +10,8 @@ public enum VectorStyleKind
     Liberty,
     Toner,
     Positron,
-    AliFlux,
     Custom,
-    Colorful
+    Colorful,
+    Streets,
+    Runner,
 }
