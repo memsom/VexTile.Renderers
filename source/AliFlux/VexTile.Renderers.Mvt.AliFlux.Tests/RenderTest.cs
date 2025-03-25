@@ -1,8 +1,10 @@
 using SQLite;
 using VexTile.Common;
 using VexTile.Common.Enums;
+using VexTile.Common.Styles;
 using VexTile.Renderer.Mvt.AliFlux;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
+using VexTile.Renderer.Mvt.AliFlux.Styles;
 
 namespace VexTile.Renderers.Mvt.AliFlux.Tests;
 
@@ -15,7 +17,10 @@ public class RenderTest
     public async Task BasicFactoryRenderTest()
     {
         var canvas = new SkiaCanvas();
-        var style = new VectorStyle(VectorStyleKind.Default);
+        var json = VectorStyleReader.GetStyle(VectorStyleKind.Default);
+        Assert.NotNull(json);
+
+        var style = new VectorStyle(json);
 
         string path = "zurich.mbtiles";
 
@@ -43,7 +48,10 @@ public class RenderTest
     public async Task BasicFactoryRenderTestPbf()
     {
         var canvas = new SkiaCanvas();
-        var style = new VectorStyle(VectorStyleKind.Default);
+        var json = VectorStyleReader.GetStyle(VectorStyleKind.Default);
+        Assert.NotNull(json);
+
+        var style = new VectorStyle(json);
 
         string path = "newyork-mapbox.pbf";
 

@@ -4,7 +4,7 @@
         <PackageProjectUrl>https://github.com/memsom/VexTile.Renderers</PackageProjectUrl>
         <PackageLicense>https://github.com/memsom/VexTile.Renderers/blob/main/LICENSE</PackageLicense>
         <RepositoryUrl>https://github.com/memsom/VexTile.Renderers</RepositoryUrl>
-        <Version>1.0.1</Version>
+        <Version>1.0.2-exp-1</Version>
     </PropertyGroup>
 
     <!-- Common Project Properties -->

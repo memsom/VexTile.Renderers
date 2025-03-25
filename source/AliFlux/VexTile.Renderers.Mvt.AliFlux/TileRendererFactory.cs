@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VexTile.Common.Drawing;
+using VexTile.Common.Enums;
+using VexTile.Common.Sources;
+using VexTile.Common.Styles;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
@@ -93,9 +96,9 @@ public static class TileRendererFactory
                 }
                 else if (layer.Source.Type == "raster")
                 {
-                    if (!rasterTileCache.ContainsKey(layer.Source) && layer.Source.Provider is not null)
+                    if (!rasterTileCache.ContainsKey(layer.Source) && layer.Source.Provider is IBasicTileSource source)
                     {
-                        byte[] tile = await layer.Source.Provider.GetTileAsync(x, y, (int)zoom);
+                        byte[] tile = await source.GetTileAsync(x, y, (int)zoom);
 
                         if (tile == null)
                         {

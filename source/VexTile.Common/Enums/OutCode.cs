@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace VexTile.Renderer.Mvt.AliFlux.Enums;
+﻿namespace VexTile.Common.Enums;
 
 [Flags]
 public enum OutCode

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using SQLite;
 using VexTile.Common;
 using VexTile.Common.Enums;
+using VexTile.Common.Styles;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
@@ -18,10 +19,16 @@ public class TileRenderer : ITileRenderer
 
     public TileRenderer(SQLiteConnection connection, VectorStyleKind styleKind, string customStyle = null, string styleProviderString = "openmaptiles")
     {
-        style = new VectorStyle(styleKind)
+        var json = styleKind == VectorStyleKind.Custom
+            ? customStyle
+            : Styles.VectorStyleReader.GetStyle(styleKind);
+
+        if (string.IsNullOrWhiteSpace(json))
         {
-            CustomStyle = customStyle,
-        };
+            throw new VectorStyleException("Invalid style");
+        }
+
+        style = new VectorStyle(json);
 
         this.connection = connection;
 

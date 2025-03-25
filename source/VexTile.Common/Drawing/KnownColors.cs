@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using SkiaSharp;
 
-namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
+namespace VexTile.Common.Drawing;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
-// this is taken from the WPF source, and smashes some of Parses code in to it too
 internal static class KnownColors
 {
     static KnownColors()
@@ -19,7 +14,7 @@ internal static class KnownColors
         {
             var colorValue = (SKColor)item.GetValue(null);
             uint coloruint = (uint)(colorValue.Alpha << 24 | colorValue.Red << 16 | colorValue.Green << 8 | colorValue.Blue);
-            string aRgbString = String.Format("#{0,8:X8}", coloruint);
+            string aRgbString = $"#{coloruint,8:X8}";
             s_knownArgbColors[aRgbString] = colorValue;
         }
     }
@@ -151,7 +146,7 @@ internal static class KnownColors
             b += b * 16;
         }
 
-        return SKColorFactory.MakeColor((byte)r, (byte)g, (byte)b, (byte)a);
+        return ColorFactory.MakeColor((byte)r, (byte)g, (byte)b, (byte)a);
     }
 
     private const string SContextColor = "ContextColor ";
@@ -161,11 +156,11 @@ internal static class KnownColors
     private static SKColor ColorStringToKnownColor(string colorString)
     {
         var color = InternalColorStringToKnownColor(colorString);
-        return SKColorFactory.LogColor(color);
+        return ColorFactory.LogColor(color);
     }
 
     /// Return the VTKnownColor from a color string.  If there's no match, VTKnownColor.UnknownColor
-    private static SKColor InternalColorStringToKnownColor(string colorString)
+    private static SKColor InternalColorStringToKnownColor(string? colorString)
     {
         if (null != colorString)
         {

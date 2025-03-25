@@ -1,37 +1,20 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
+namespace VexTile.Common.Drawing;
 
-public struct Rect
+public struct Rect(double x, double y, double width, double height)
 {
-    public Rect(double x, double y, double width, double height) : this()
-    {
-        X = x;
-        Y = y;
-        Width = width;
-        Height = height;
-    }
+    public Rect(Point tl, Point br) : this(tl.X, tl.Y, br.X - tl.X, br.Y - tl.Y) { }
 
-    public Rect(Point tl, Point br) : this()
-    {
-        X = tl.X;
-        Y = tl.Y;
-        Width = br.X - tl.X;
-        Height = br.Y - tl.Y;
-    }
+    public Rect(Point loc, Size sz) : this(loc.X, loc.Y, sz.Width, sz.Height) { }
 
-    public Rect(Point loc, System.Drawing.Size sz) : this(loc.X, loc.Y, sz.Width, sz.Height)
-    {
-    }
+    public double X { get; set; } = x;
 
-    public double X { get; set; }
+    public double Y { get; set; } = y;
 
-    public double Y { get; set; }
+    public double Width { get; set; } = width;
 
-    public double Width { get; set; }
-
-    public double Height { get; set; }
+    public double Height { get; set; } = height;
 
 #pragma warning disable S2223 // Non-constant static fields should not be visible
     public static Rect Zero { get; } = new();
@@ -47,11 +30,11 @@ public struct Rect
 
     public bool IsEmpty => (Width <= 0) || (Height <= 0);
 
-    public Point Center => new(X + Width / 2, Y + Height / 2);
+    public System.Drawing.Point Center => new((int)(X + Width / 2), (int)(Y + Height / 2));
 
-    public Size Size
+    public System.Drawing.Size Size
     {
-        get => new(Width, Height);
+        get => new((int)Width, (int)Height);
         set
         {
             Width = value.Width;
@@ -59,9 +42,9 @@ public struct Rect
         }
     }
 
-    public Point Location
+    public System.Drawing.Point Location
     {
-        get => new(X, Y);
+        get => new((int)X, (int)Y);
         set
         {
             X = value.X;
@@ -75,8 +58,7 @@ public struct Rect
 
     public override bool Equals(object obj)
     {
-        if (obj is null)
-            return false;
+        if (obj is null) return false;
 
         return obj is Rect rect && Equals(rect) || obj is Rectangle rectangle && Equals(rectangle);
     }
@@ -100,7 +82,7 @@ public struct Rect
     // Hit Testing / Intersection / Union
     public bool Contains(Rect rect) => X <= rect.X && Right >= rect.Right && Y <= rect.Y && Bottom >= rect.Bottom;
 
-    public bool Contains(Point pt) => Contains(pt.X, pt.Y);
+    public bool Contains(System.Drawing.Point pt) => Contains(pt.X, pt.Y);
 
     public bool Contains(double x, double y) => (x >= Left) && (x < Right) && (y >= Top) && (y < Bottom);
 
@@ -119,14 +101,13 @@ public struct Rect
         double width = Math.Min(r1.Right, r2.Right) - x;
         double height = Math.Min(r1.Bottom, r2.Bottom) - y;
 
-        if (width < 0 || height < 0)
-            return Zero;
+        if (width < 0 || height < 0) return Zero;
 
         return new Rect(x, y, width, height);
     }
 
     // Inflate and Offset
-    public Rect Inflate(Size sz) => Inflate(sz.Width, sz.Height);
+    public Rect Inflate(System.Drawing.Size sz) => Inflate(sz.Width, sz.Height);
 
     public Rect Inflate(double width, double height)
     {
@@ -146,7 +127,7 @@ public struct Rect
         return r;
     }
 
-    public Rect Offset(Point dr) => Offset(dr.X, dr.Y);
+    public Rect Offset(System.Drawing.Point dr) => Offset(dr.X, dr.Y);
 
     public Rect Round() => new(Math.Round(X), Math.Round(Y), Math.Round(Width), Math.Round(Height));
 

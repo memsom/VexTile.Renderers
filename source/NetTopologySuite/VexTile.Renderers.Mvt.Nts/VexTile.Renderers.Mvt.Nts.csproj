@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Configurations>Debug;Release</Configurations>
+        <Title>VexTile Mapbox Vector Tile Renderer based on NetTopologySuite</Title>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Description>A experimental Mapbox Vector Tile Renderer for .Net/C#, based on the NetTopologySuite Mapbox VectorTiles</Description>
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>VexTile.Renderer.Mvt.AliFlux</PackageId>
+        <PackageIcon>logo-small.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\..\images\logo-small.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="style.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NetTopologySuite.IO.VectorTiles.Mapbox"/>
+        <PackageReference Include="Newtonsoft.Json"/>
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="sqlite-net-pcl"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\VexTile.Common\VexTile.Common.csproj"/>
+    </ItemGroup>
+
+</Project>

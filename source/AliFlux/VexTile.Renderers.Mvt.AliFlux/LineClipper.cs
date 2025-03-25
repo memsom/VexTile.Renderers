@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VexTile.Common.Drawing;
+using VexTile.Common.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
 

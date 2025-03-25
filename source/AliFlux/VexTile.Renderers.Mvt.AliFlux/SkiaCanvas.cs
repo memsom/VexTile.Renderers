@@ -8,9 +8,11 @@ using System.Linq;
 using System.Text;
 using SkiaSharp;
 using VexTile.ClipperLib;
-using VexTile.Renderer.Mvt.AliFlux.Drawing;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
-using Point = VexTile.Renderer.Mvt.AliFlux.Drawing.Point;
+using VexTile.Common.Drawing;
+using VexTile.Common.Enums;
+using VexTile.Common.Styles;
+using VexTile.Renderer.Mvt.AliFlux.Styles;
+using Point = VexTile.Common.Drawing.Point;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
 

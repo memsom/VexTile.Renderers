@@ -4,6 +4,7 @@
         <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>Latest</LangVersion>
         <RootNamespace>VexTile.Common</RootNamespace>
         <Title>VexTile Common</Title>
@@ -21,6 +22,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="NLog" />
         <PackageReference Include="sqlite-net-pcl"/>
+        <PackageReference Include="SkiaSharp"/>
+        <PackageReference Include="Newtonsoft.Json"/>
     </ItemGroup>
 </Project>

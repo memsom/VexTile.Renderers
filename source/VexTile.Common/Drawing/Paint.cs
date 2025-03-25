@@ -1,8 +1,7 @@
-﻿using System;
 using SkiaSharp;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
+using VexTile.Common.Enums;
 
-namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
+namespace VexTile.Common.Drawing;
 
 public class Paint
 {

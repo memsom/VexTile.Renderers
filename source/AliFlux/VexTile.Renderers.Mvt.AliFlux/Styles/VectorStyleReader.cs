@@ -2,11 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using VexTile.Common;
 using VexTile.Common.Enums;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
 
-namespace VexTile.Renderer.Mvt.AliFlux;
+namespace VexTile.Renderer.Mvt.AliFlux.Styles;
 
 public static class VectorStyleReader
 {
@@ -22,7 +20,7 @@ public static class VectorStyleReader
         string resourceName = $"{nsname}.Styles.{name}-style.json";
         using var stream = assembly.GetManifestResourceStream(resourceName);
 
-        if (stream == null) throw new VectorStyleException($"Could not find '{nsname}.Styles.{name}-style.json'");
+        if (stream == null) throw new Common.Styles.VectorStyleException($"Could not find '{nsname}.Styles.{name}-style.json'");
 
         using var reader = new StreamReader(stream);
         return reader.ReadToEnd();

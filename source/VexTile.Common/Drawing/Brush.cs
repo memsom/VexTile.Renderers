@@ -1,4 +1,4 @@
-﻿namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
+namespace VexTile.Common.Drawing;
 
 public class Brush
 {

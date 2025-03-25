@@ -1,10 +1,9 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace VexTile.Renderer.Mvt.AliFlux;
+namespace VexTile.Common.Extensions;
 
-internal static class Utils
+public static class Utils
 {
     public static double ConvertRange(double oldValue, double oldMin, double oldMax, double newMin, double newMax, bool clamp = false)
     {

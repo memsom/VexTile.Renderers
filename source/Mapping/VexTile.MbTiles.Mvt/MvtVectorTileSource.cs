@@ -4,9 +4,10 @@ using BruTile.MbTiles;
 using BruTile.Predefined;
 using SQLite;
 using VexTile.Common.Enums;
+using VexTile.Common.Styles;
 using VexTile.Renderer.Mvt.AliFlux;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
+using VexTile.Renderer.Mvt.AliFlux.Styles;
 
 namespace VexTile.TileSource.Mvt;
 
@@ -72,7 +73,8 @@ public class MvtVectorTileSource : ITileSource
             _tileRange = ReadTileRangeForEachLevelFromTilesTable(connection, zoomLevelsFromDatabase);
         }
 
-        _style = new VectorStyle(styleKind);
+        var json = VectorStyleReader.GetStyle(styleKind);
+        _style = new VectorStyle(json);
         var provider = new VectorTilesSource(new SQLiteConnection(connectionString));
         _style.SetSourceProvider(styleProviderName, provider);
     }

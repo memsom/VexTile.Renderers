@@ -2,9 +2,10 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using SQLite;
+using VexTile.Common.Drawing;
+using VexTile.Common.Extensions;
 using VexTile.Common.Sources;
 using VexTile.Common.Tables;
-using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.GlobalMercator;
 
 namespace VexTile.Renderer.Mvt.AliFlux.Sources;

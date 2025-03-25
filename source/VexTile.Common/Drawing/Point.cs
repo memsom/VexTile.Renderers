@@ -1,20 +1,13 @@
-﻿using System;
 using System.Globalization;
 
-namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
+namespace VexTile.Common.Drawing;
 
-public struct Point
+public struct Point(double x, double y)
 {
-    public Point(double x, double y)
-    {
-        X = x;
-        Y = y;
-    }
+    public double X { get; set; } = x;
+    public double Y { get; set; } = y;
 
-    public double X { get; set; }
-    public double Y { get; set; }
-
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is Point p)
         {
@@ -29,10 +22,8 @@ public struct Point
         return X.GetHashCode() ^ (Y.GetHashCode() * 397);
     }
 
-    public override string ToString()
-    {
-        return string.Format("{{X={0} Y={1}}}", X.ToString(CultureInfo.InvariantCulture), Y.ToString(CultureInfo.InvariantCulture));
-    }
+    public override string ToString() =>
+        $"{{X={X.ToString(CultureInfo.InvariantCulture)} Y={Y.ToString(CultureInfo.InvariantCulture)}}}";
 
     public static bool operator ==(Point p1, Point p2) => (p1.X == p2.X) && (p1.Y == p2.Y);
 
@@ -56,10 +47,7 @@ public struct Point
         return new Point(Math.Round(X), Math.Round(Y));
     }
 
-    public bool IsEmpty
-    {
-        get { return (X == 0) && (Y == 0); }
-    }
+    public bool IsEmpty => (X == 0) && (Y == 0);
 
     public static explicit operator Size(Point pt)
     {

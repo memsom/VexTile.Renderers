@@ -1,4 +1,4 @@
-﻿namespace VexTile.Renderer.Mvt.AliFlux.Enums;
+namespace VexTile.Common.Enums;
 
 public enum TextAlignment
 {

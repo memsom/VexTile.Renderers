@@ -1,33 +1,23 @@
-﻿using System;
+namespace VexTile.Common.Drawing;
 
-namespace VexTile.Renderer.Mvt.AliFlux.Drawing;
-
-// based on Xamarin Forms
-public struct Vector
+/// <summary>
+/// based on Xamarin Forms
+/// </summary>
+public struct Vector(double x, double y)
 {
-    public Vector(double x, double y)
-        : this()
-    {
-        X = x;
-        Y = y;
-    }
-
+    
     public Vector(Point p)
-        : this()
+        : this(p.X, p.Y)
     {
-        X = p.X;
-        Y = p.Y;
     }
 
     public Vector(double angle)
-        : this()
+        : this(Math.Cos(Math.PI * angle / 180), Math.Sin(Math.PI * angle / 180))
     {
-        X = Math.Cos(Math.PI * angle / 180);
-        Y = Math.Sin(Math.PI * angle / 180);
     }
 
-    public double X { private set; get; }
-    public double Y { private set; get; }
+    public double X { private set; get; } = x;
+    public double Y { private set; get; } = y;
 
     public double LengthSquared
     {

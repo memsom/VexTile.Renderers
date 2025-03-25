@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NLog;
 using SkiaSharp;
-using VexTile.Common;
+using VexTile.Common.Drawing;
 using VexTile.Common.Enums;
+using VexTile.Common.Extensions;
 using VexTile.Common.Sources;
-using VexTile.Renderer.Mvt.AliFlux.Drawing;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
-using VexTile.Renderer.Mvt.AliFlux.Sources;
+using VexTile.Renderer.Mvt.AliFlux;
+using Layer = VexTile.Common.Drawing.Layer;
 
-namespace VexTile.Renderer.Mvt.AliFlux;
+namespace VexTile.Common.Styles;
 
 public class VectorStyle : IVectorStyle
 {
@@ -26,38 +23,10 @@ public class VectorStyle : IVectorStyle
 
     protected readonly ConcurrentDictionary<string, Brush[]> BrushesCache = new();
 
-    public string CustomStyle { get; set; }
-
-    public VectorStyle(VectorStyleKind style, double scale = 1, string customStyle = null)
+    public VectorStyle(string style, double scale = 1)
     {
-        CustomStyle = customStyle;
-
-        string json;
-
-        if (style == VectorStyleKind.Custom)
-        {
-            if (!string.IsNullOrWhiteSpace(CustomStyle))
-            {
-                json = CustomStyle;
-            }
-            else
-            {
-#if DEBUG
-                json = VectorStyleReader.GetStyle(VectorStyleKind.Default); // fallback use who know what will happen...
-                log.Debug("The custom style was not set, so we have fallen back to Basic.");
-#else
-                throw new VectorStyleException("FATAL ERROR: Style could not be loaded!");
-#endif
-            }
-        }
-        else
-        {
-            json = VectorStyleReader.GetStyle(style);
-        }
-
-
         // this should all be simplified to a generic template.
-        var jObject = JObject.Parse(json);
+        var jObject = JObject.Parse(style);
 
         if (jObject["metadata"] != null)
         {
@@ -172,7 +141,7 @@ public class VectorStyle : IVectorStyle
             }
         }
 
-        Hash = Utils.Sha256(json);
+        Hash = Utils.Sha256(style);
     }
 
 
@@ -521,7 +490,7 @@ public class VectorStyle : IVectorStyle
         byte b = (255 * colorComponent1) > 255 ? (byte)255 : (byte)(255 * colorComponent1);
         byte a = (byte)ta;
 
-        return SKColorFactory.MakeColor(r, g, b, a);
+        return ColorFactory.MakeColor(r, g, b, a);
     }
 
     private static double GetColorComponent(double temp1, double temp2, double temp3)
@@ -567,19 +536,19 @@ public class VectorStyle : IVectorStyle
 
         if (iColor is System.Drawing.Color color)
         {
-            return SKColorFactory.MakeColor(color.R, color.G, color.B, color.A);
+            return ColorFactory.MakeColor(color.R, color.G, color.B, color.A);
         }
 
         if (iColor is SKColor skColor)
         {
-            return SKColorFactory.LogColor(skColor);
+            return ColorFactory.LogColor(skColor);
         }
 
         string colorString = (string)iColor;
 
         if (colorString[0] == '#')
         {
-            return SKColorFactory.LogColor(SKColor.Parse(colorString));
+            return ColorFactory.LogColor(SKColor.Parse(colorString));
         }
 
         if (colorString.StartsWith("hsl("))
@@ -614,7 +583,7 @@ public class VectorStyle : IVectorStyle
             double b = double.Parse(segments[3], culture);
             double a = double.Parse(segments[4], culture) * 255;
 
-            return SKColorFactory.MakeColor((byte)r, (byte)g, (byte)b, (byte)a);
+            return ColorFactory.MakeColor((byte)r, (byte)g, (byte)b, (byte)a);
         }
 
         if (colorString.StartsWith("rgb("))
@@ -624,12 +593,12 @@ public class VectorStyle : IVectorStyle
             double g = double.Parse(segments[2], culture);
             double b = double.Parse(segments[3], culture);
 
-            return SKColorFactory.MakeColor((byte)r, (byte)g, (byte)b, 255);
+            return ColorFactory.MakeColor((byte)r, (byte)g, (byte)b, 255);
         }
 
         try
         {
-            return SKColorFactory.LogColor(ConvertFromString(colorString));
+            return ColorFactory.LogColor(ConvertFromString(colorString));
         }
         catch (Exception e)
         {
