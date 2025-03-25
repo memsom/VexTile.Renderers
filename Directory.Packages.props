@@ -7,6 +7,8 @@
     <PackageVersion Include="BruTile" Version="5.0.6" />
     <PackageVersion Include="BruTile.MbTiles" Version="5.0.6" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="Mapsui.Avalonia" Version="4.1.8" />
+    <PackageVersion Include="Mapsui.Nts" Version="4.1.8" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="NLog" Version="5.0.0" />
