@@ -28,7 +28,7 @@ public class MvtSource
     public VectorTile? GetVectorTile(int x, int y, int z)
     {
         //Define which tile you want to read. You may be able to extract the x/y/zoom info from the file path of the tile.
-        var tileDefinition = new NetTopologySuite.IO.VectorTiles.Tiles.Tile(x, y, z);
+        var tileDefinition = new NetTopologySuite.IO.VectorTiles.Tiles.Tile(x, y, z).InvertY();
 
         //Open a vector tile file as a stream.
         if (GetVectorTileStream(x, y, z) is {} tileStream)

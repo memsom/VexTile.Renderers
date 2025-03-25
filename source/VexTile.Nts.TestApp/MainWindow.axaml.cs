@@ -5,6 +5,7 @@ using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Nts.Extensions;
 using Mapsui.Styles;
+using NetTopologySuite.IO.VectorTiles;
 using VexTile.Renderers.Mvt.Nts;
 
 namespace VexTile.Nts.TestApp;
@@ -24,9 +25,37 @@ public partial class MainWindow : Window
     {
         var mvtSource = new MvtSource(@"zurich.mbtiles");
 
-        var tile = mvtSource.GetVectorTile(0, 0, 0);
+        VectorTile? tile;
 
-        foreach (var layer in tile?.Layers ?? [])
+        //tile = mvtSource.GetVectorTile(0, 0, 0);
+        //ProcessTileData(tile);
+
+        tile = mvtSource.GetVectorTile(0, 0, 1);
+        ProcessTileData(tile);
+        tile = mvtSource.GetVectorTile(0, 1, 1);
+        ProcessTileData(tile);
+        tile = mvtSource.GetVectorTile(1, 0, 1);
+        ProcessTileData(tile);
+        tile = mvtSource.GetVectorTile(1, 1, 1);
+        ProcessTileData(tile);
+
+        var mapLayer = new MemoryLayer("tile")
+        {
+            IsMapInfoLayer = true,
+            Features = _features,
+            Style = new VectorStyle
+            {
+                Fill = new Brush(Color.Transparent),
+                Outline = new Pen(Color.Transparent)
+            }
+        };
+
+        MapControl.Map.Layers.Add(mapLayer);
+    }
+
+    private void ProcessTileData(VectorTile tile)
+    {
+        foreach (var layer in tile.Layers ?? [])
         {
             Console.WriteLine(layer.Name);
             if (layer.Name == "water")
@@ -120,18 +149,5 @@ public partial class MainWindow : Window
                 }
             }
         }
-
-        var mapLayer = new MemoryLayer("tile")
-        {
-            IsMapInfoLayer = true,
-            Features = _features,
-            Style = new VectorStyle
-            {
-                Fill = new Brush(Color.Transparent),
-                Outline = new Pen(Color.Transparent)
-            }
-        };
-
-        MapControl.Map.Layers.Add(mapLayer);
     }
 }
