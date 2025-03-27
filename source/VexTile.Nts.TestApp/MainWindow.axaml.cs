@@ -51,7 +51,6 @@ public partial class MainWindow : Window
 
         var mvtSource = new MvtSource(@"zurich.mbtiles");
 
-        ProcessTileData(mvtSource.GetVectorTile(0, 0, 0));
         ProcessTileData(mvtSource.GetVectorTile(0, 0, 1));
         ProcessTileData(mvtSource.GetVectorTile(0, 1, 1));
         ProcessTileData(mvtSource.GetVectorTile(1, 0, 1));
