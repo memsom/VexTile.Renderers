@@ -17,7 +17,7 @@ public static class SKColorFactory
         if (!_colours.TryGetValue(key, out SKColor color))
         {
             color = new SKColor(red, green, blue, alpha);
-            _colours.Add(key, color);
+            _colours[key] = color;
 
 #if DEBUG_COLORS
             log.Debug($"{callerName} -> Created {key} :: SKColorFactory.MakeColor({red}, {green}, {blue}, {alpha})");
