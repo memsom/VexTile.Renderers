@@ -25,13 +25,24 @@ public class MvtSource
         reader = new MapboxTileReader();
     }
 
+    public IEnumerable<VectorTile> GetVectorTiles(int z)
+    {
+        var tiles = db.Table<Tiles>().Where(t => t.Zoom == z);
+        foreach (var tile in tiles)
+        {
+            var tileDefinition = new NetTopologySuite.IO.VectorTiles.Tiles.Tile(tile.X, tile.Y, tile.Zoom).InvertY();
+
+            yield return reader.Read(GetVectorTileStream(tile), tileDefinition);
+        }
+    }
+
     public VectorTile? GetVectorTile(int x, int y, int z)
     {
         //Define which tile you want to read. You may be able to extract the x/y/zoom info from the file path of the tile.
         var tileDefinition = new NetTopologySuite.IO.VectorTiles.Tiles.Tile(x, y, z).InvertY();
 
         //Open a vector tile file as a stream.
-        if (GetVectorTileStream(x, y, z) is {} tileStream)
+        if (GetVectorTileStream(x, y, z) is { } tileStream)
         {
             //Read the vector tile.
             return reader.Read(tileStream, tileDefinition);
@@ -40,15 +51,8 @@ public class MvtSource
         return null;
     }
 
-    public Stream? GetVectorTileStream(int x, int y, int z)
+    private Stream GetVectorTileStream(Tiles tile)
     {
-        var tile = db.Table<Tiles>().FirstOrDefault(t => t.X == x && t.Y == y && t.Zoom == z);
-
-        if (tile is null)
-        {
-            return null;
-        }
-
         if (IsGZipped(tile.TileData))
         {
             using var stream = new MemoryStream(tile.TileData);
@@ -63,10 +67,19 @@ public class MvtSource
         return new MemoryStream(tile.TileData);
     }
 
-    private static bool IsGZipped(byte[] data)
+    private Stream? GetVectorTileStream(int x, int y, int z)
     {
-        return IsZipped(data, 3, "1F-8B-08");
+        var tile = db.Table<Tiles>().FirstOrDefault(t => t.X == x && t.Y == y && t.Zoom == z);
+
+        if (tile is null)
+        {
+            return null;
+        }
+
+        return GetVectorTileStream(tile);
     }
+
+    private static bool IsGZipped(byte[] data) { return IsZipped(data, 3, "1F-8B-08"); }
 
     private static bool IsZipped(byte[] data, int signatureSize = 4, string expectedSignature = "50-4B-03-04")
     {

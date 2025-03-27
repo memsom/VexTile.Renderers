@@ -51,10 +51,10 @@ public partial class MainWindow : Window
 
         var mvtSource = new MvtSource(@"zurich.mbtiles");
 
-        ProcessTileData(mvtSource.GetVectorTile(0, 0, 1));
-        ProcessTileData(mvtSource.GetVectorTile(0, 1, 1));
-        ProcessTileData(mvtSource.GetVectorTile(1, 0, 1));
-        ProcessTileData(mvtSource.GetVectorTile(1, 1, 1));
+        foreach (var tile in mvtSource.GetVectorTiles(3))
+        {
+            ProcessTileData(tile);
+        }
     }
 
     private void ProcessTileData(VectorTile? tile)
