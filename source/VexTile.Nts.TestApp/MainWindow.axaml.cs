@@ -1,11 +1,16 @@
 using System;
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using BruTile.MbTiles;
 using Mapsui;
 using Mapsui.Layers;
 using Mapsui.Nts.Extensions;
+using Mapsui.Projections;
 using Mapsui.Styles;
+using Mapsui.Tiling.Layers;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.VectorTiles;
+using SQLite;
 using VexTile.Renderers.Mvt.Nts;
 
 namespace VexTile.Nts.TestApp;
@@ -23,21 +28,13 @@ public partial class MainWindow : Window
 
     private void InitMap()
     {
-        var mvtSource = new MvtSource(@"zurich.mbtiles");
+        var mbTilesTileSource = new MbTilesTileSource(new SQLiteConnectionString("base.mbtiles", true));
+        var mbTilesLayer = new TileLayer(mbTilesTileSource) {Name = "base"};
 
-        VectorTile? tile;
+        MapControl.Map.Layers.Add(mbTilesLayer);
 
-        //tile = mvtSource.GetVectorTile(0, 0, 0);
-        //ProcessTileData(tile);
-
-        tile = mvtSource.GetVectorTile(0, 0, 1);
-        ProcessTileData(tile);
-        tile = mvtSource.GetVectorTile(0, 1, 1);
-        ProcessTileData(tile);
-        tile = mvtSource.GetVectorTile(1, 0, 1);
-        ProcessTileData(tile);
-        tile = mvtSource.GetVectorTile(1, 1, 1);
-        ProcessTileData(tile);
+        var res = MapControl.Map.Navigator.Resolutions[2];
+        MapControl.Map.Navigator.ZoomTo(res);
 
         var mapLayer = new MemoryLayer("tile")
         {
@@ -51,18 +48,28 @@ public partial class MainWindow : Window
         };
 
         MapControl.Map.Layers.Add(mapLayer);
+
+        var mvtSource = new MvtSource(@"zurich.mbtiles");
+
+        ProcessTileData(mvtSource.GetVectorTile(0, 0, 0));
+        ProcessTileData(mvtSource.GetVectorTile(0, 0, 1));
+        ProcessTileData(mvtSource.GetVectorTile(0, 1, 1));
+        ProcessTileData(mvtSource.GetVectorTile(1, 0, 1));
+        ProcessTileData(mvtSource.GetVectorTile(1, 1, 1));
     }
 
-    private void ProcessTileData(VectorTile tile)
+    private void ProcessTileData(VectorTile? tile)
     {
-        foreach (var layer in tile.Layers ?? [])
+        if (tile == null) return;
+
+        foreach (var layer in tile.Layers)
         {
             Console.WriteLine(layer.Name);
             if (layer.Name == "water")
             {
                 foreach (var feature in layer.Features)
                 {
-                    var item = feature.Geometry.ToFeature();
+                    var item = feature.Geometry.CompensatePoints().ToFeature();
                     var vstyle = new VectorStyle
                     {
                         Fill = new Brush(Color.Blue),
@@ -72,11 +79,12 @@ public partial class MainWindow : Window
                     _features.Add(item);
                 }
             }
+
             if (layer.Name == "landcover")
             {
                 foreach (var feature in layer.Features)
                 {
-                    var item = feature.Geometry.ToFeature();
+                    var item = feature.Geometry.CompensatePoints().ToFeature();
                     var vstyle = new VectorStyle
                     {
                         Fill = new Brush(Color.Yellow),
@@ -86,11 +94,12 @@ public partial class MainWindow : Window
                     _features.Add(item);
                 }
             }
+
             if (layer.Name == "boundary")
             {
                 foreach (var feature in layer.Features)
                 {
-                    var item = feature.Geometry.ToFeature();
+                    var item = feature.Geometry.CompensatePoints().ToFeature();
                     var vstyle = new VectorStyle
                     {
                         Fill = new Brush(Color.Black),
@@ -100,11 +109,12 @@ public partial class MainWindow : Window
                     _features.Add(item);
                 }
             }
+
             if (layer.Name == "water_name")
             {
                 foreach (var feature in layer.Features)
                 {
-                    var item = feature.Geometry.ToFeature();
+                    var item = feature.Geometry.CompensatePoint().ToFeature();
                     var vstyle = new VectorStyle
                     {
                         Fill = new Brush(Color.Transparent),
@@ -129,7 +139,8 @@ public partial class MainWindow : Window
             {
                 foreach (var feature in layer.Features)
                 {
-                    var item = feature.Geometry.ToFeature();
+                    feature.Geometry.Normalize();
+                    var item = feature.Geometry.CompensatePoint().ToFeature();
                     var vstyle = new VectorStyle
                     {
                         Fill = new Brush(Color.Transparent),
@@ -137,7 +148,7 @@ public partial class MainWindow : Window
                     };
                     item.Styles.Add(vstyle);
 
-                    if (feature.Attributes.GetOptionalValue("name") is { } name)
+                    if (feature.Attributes.GetOptionalValue("name:en") is { } name)
                     {
                         var labelStyle = new LabelStyle()
                         {
@@ -145,9 +156,45 @@ public partial class MainWindow : Window
                         };
                         item.Styles.Add(labelStyle);
                     }
+
                     _features.Add(item);
                 }
             }
         }
+    }
+}
+
+public static class GeometryExtensions
+{
+    public static Geometry CompensatePoint(this Geometry geometry)
+    {
+        var position = geometry.Centroid;
+        var (xx, yy) = SphericalMercator.FromLonLat(position.X, position.Y);
+
+        foreach (var coordinate in geometry.Coordinates)
+        {
+            coordinate.X = xx;
+            coordinate.Y = yy;
+        }
+
+        geometry.Normalize();
+
+        geometry.GeometryChanged();
+
+        return geometry;
+    }
+
+    public static Geometry CompensatePoints(this Geometry geometry)
+    {
+        foreach (var coordinate in geometry.Coordinates)
+        {
+            var (xx, yy) = SphericalMercator.FromLonLat(coordinate.X, coordinate.Y);
+            coordinate.X = xx;
+            coordinate.Y = yy;
+        }
+
+        geometry.GeometryChanged();
+
+        return geometry;
     }
 }
