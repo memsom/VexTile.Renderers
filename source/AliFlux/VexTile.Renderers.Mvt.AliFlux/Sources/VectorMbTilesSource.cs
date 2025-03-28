@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using SQLite;
-using VexTile.Common.Tables;
+using VexTile.Common.Sources;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.GlobalMercator;
 
@@ -14,7 +12,6 @@ namespace VexTile.Renderer.Mvt.AliFlux.Sources;
 
 // MbTiles loading code in GIST by geobabbler
 // https://gist.github.com/geobabbler/9213392
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
 public class VectorTilesSource : IVectorTileSource
 {
     static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
@@ -24,19 +21,19 @@ public class VectorTilesSource : IVectorTileSource
     public int MaxZoom { get; private set; } = 0;
     public string? Name { get; private set; }
     public string? Description { get; private set; }
-    public string? MBTilesVersion { get; private set; }
+    public string? MbTilesVersion { get; private set; }
     public string? Path { get; private set; }
 
     private readonly ConcurrentDictionary<string, VectorTile> tileCache = new();
 
     private readonly GlobalMercatorImplementation gmt = new();
 
-    private readonly SQLiteConnection sharedConnection;
+    private readonly IMvtTileDataSource sharedDataSource;
 
     // converted to use Sqlite-Net
-    public VectorTilesSource(SQLiteConnection connection)
+    public VectorTilesSource(IMvtTileDataSource dataSource)
     {
-        sharedConnection = connection ?? throw new ArgumentNullException(nameof(connection));
+        sharedDataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 
         LoadMetadata();
     }
@@ -46,7 +43,7 @@ public class VectorTilesSource : IVectorTileSource
     {
         try
         {
-            foreach (var item in sharedConnection.Table<MetaData>())
+            foreach (var item in sharedDataSource.GetMetaData())
             {
                 string name = item.Name;
                 switch (name.ToLower())
@@ -84,12 +81,10 @@ public class VectorTilesSource : IVectorTileSource
                         this.Description = item.Value;
                         break;
                     case "version":
-                        this.MBTilesVersion = item.Value;
+                        this.MbTilesVersion = item.Value;
                         break;
-
                 }
             }
-
         }
         catch (Exception)
         {
@@ -103,7 +98,7 @@ public class VectorTilesSource : IVectorTileSource
     {
         try
         {
-            var found = sharedConnection.Table<Tiles>().FirstOrDefault(t => t.X == x && t.Y == y && t.Zoom == zoom);
+            var found = sharedDataSource.GetTile(x, y, zoom);
 
             if (found is { } tiles)
             {
@@ -128,10 +123,11 @@ public class VectorTilesSource : IVectorTileSource
         using (var fileStream = File.Create(path))
         using (var bfw = new BinaryWriter(fileStream))
         {
-            if (GetRawTile(x, y, zoom) is byte[] bytes)
+            if (GetRawTile(x, y, zoom) is { } bytes)
             {
                 bfw.Write(bytes);
             }
+
             bfw.Close();
         }
     }
@@ -206,7 +202,6 @@ public class VectorTilesSource : IVectorTileSource
             }
 
             return actualTile;
-
         }
         catch (Exception e)
         {
@@ -221,26 +216,25 @@ public class VectorTilesSource : IVectorTileSource
     {
         return await Task.Run(() =>
         {
-            var key = x.ToString() + "," + y.ToString() + "," + zoom.ToString();
+            var key = x + "," + y + "," + zoom;
 
             lock (keyLocker)
             {
-                if (tileCache.ContainsKey(key))
+                if (tileCache.TryGetValue(key, out var existingTile))
                 {
-                    return tileCache[key];
+                    return existingTile;
                 }
 
-                if (GetRawTile(x, y, zoom) is byte[] rawTileStream)
+                if (GetRawTile(x, y, zoom) is { } rawTileStream)
                 {
-
                     var pbfTileProvider = new PbfTileSource(rawTileStream);
-                    var tile = pbfTileProvider.GetVectorTileAsync(x, y, zoom).Result;
+                    var tile = pbfTileProvider.GetTileAsync().Result;
                     tileCache[key] = tile;
 
                     return tile;
                 }
 
-                return default;
+                return null;
             }
         });
     }
@@ -248,12 +242,11 @@ public class VectorTilesSource : IVectorTileSource
     public async Task<byte[]> GetTileAsync(int x, int y, int zoom) =>
         await Task.Run(() =>
         {
-            if (GetRawTile(x, y, zoom) is byte[] rawTile)
+            if (GetRawTile(x, y, zoom) is { } rawTile)
             {
                 return rawTile;
             }
 
-            return new byte[0];
+            return [];
         });
-
 }

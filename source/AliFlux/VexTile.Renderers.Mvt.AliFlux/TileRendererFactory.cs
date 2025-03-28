@@ -10,13 +10,31 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 
 public static class TileRendererFactory
 {
-    static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
 
+    // public static async Task<byte[]> RenderAsync(VectorStyle style, VectorTile tile, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null)
+    // {
+    //
+    // }
+
+    /// <summary>
+    /// Renders a tile at {x,y} with the given zoom level from the attached Provider using the style
+    /// </summary>
+    /// <param name="style">the style to use</param>
+    /// <param name="canvas">the canvas to draw to</param>
+    /// <param name="x">the X</param>
+    /// <param name="y">the Y</param>
+    /// <param name="zoom">the zoom level</param>
+    /// <param name="sizeX">optional width size for the tile, defaults to 512</param>
+    /// <param name="sizeY">optional height size for the tile, defaults to 512</param>
+    /// <param name="scale">optional scale, defaults to 1</param>
+    /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
+    /// <returns></returns>
     public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null)
     {
-        Dictionary<Source, byte[]> rasterTileCache = new Dictionary<Source, byte[]>();
-        Dictionary<Source, VectorTile> vectorTileCache = new Dictionary<Source, VectorTile>();
-        Dictionary<string, List<VectorTileLayer>> categorizedVectorLayers = new Dictionary<string, List<VectorTileLayer>>();
+        Dictionary<Source, byte[]> rasterTileCache = new();
+        Dictionary<Source, VectorTile> vectorTileCache = new();
+        Dictionary<string, List<VectorTileLayer>> categorizedVectorLayers = new();
 
         double actualZoom = zoom;
 
@@ -45,81 +63,61 @@ public static class TileRendererFactory
 
             if (layer.Source != null)
             {
-                if (layer.Source == null || layer.Source.Type == "vector")
+                if (layer.Source.Type == "raster")
                 {
-                    if (!vectorTileCache.ContainsKey(layer.Source) && layer.Source.Provider is IVectorTileSource source)
+                    // we are no longer supporting rater as a source because the
+                    // raster code seems to have been reading from a file. We can
+                    // add a proper tile reader if needed, but for now we were not
+                    // doing anything useful with this source anyway
+                    continue;
+                }
+
+                if (!vectorTileCache.ContainsKey(layer.Source) && layer.Source.Provider is { } source)
+                {
+                    VectorTile tile = null;
+
+                    // we should be able to
+                    if (source is IVectorTileSource vectorSource)
+                        tile = await vectorSource.GetVectorTileAsync(x, y, (int)zoom);
+                    else if (source is IPbfTileSource pbfSource) tile = await pbfSource.GetTileAsync();
+
+                    if (tile == null)
                     {
-                        VectorTile tile = await source.GetVectorTileAsync(x, y, (int)zoom);
+                        return null;
+                    }
 
-                        if (tile == null)
+                    // magic sauce! :p
+                    if (tile.IsOverZoomed)
+                    {
+                        canvas.ClipOverflow = true;
+                    }
+
+                    vectorTileCache[layer.Source] = tile;
+
+                    // normalize the points from 0 to size
+                    foreach (var vectorLayer in tile.Layers)
+                    {
+                        foreach (var feature in vectorLayer.Features)
                         {
-                            return null;
-                        }
-
-                        // magic sauce! :p
-                        if (tile.IsOverZoomed)
-                        {
-                            canvas.ClipOverflow = true;
-                        }
-
-                        vectorTileCache[layer.Source] = tile;
-
-                        // normalize the points from 0 to size
-                        foreach (var vectorLayer in tile.Layers)
-                        {
-                            foreach (var feature in vectorLayer.Features)
+                            foreach (var geometry in feature.Geometry)
                             {
-                                foreach (var geometry in feature.Geometry)
+                                for (int i = 0; i < geometry.Count; i++)
                                 {
-                                    for (int i = 0; i < geometry.Count; i++)
-                                    {
-                                        var point = geometry[i];
-                                        geometry[i] = new Point(point.X / feature.Extent * sizeX, point.Y / feature.Extent * sizeY);
-                                    }
+                                    var point = geometry[i];
+                                    geometry[i] = new(point.X / feature.Extent * sizeX, point.Y / feature.Extent * sizeY);
                                 }
                             }
                         }
-
-                        foreach (var tileLayer in tile.Layers)
-                        {
-                            if (!categorizedVectorLayers.ContainsKey(tileLayer.Name))
-                            {
-                                categorizedVectorLayers[tileLayer.Name] = new List<VectorTileLayer>();
-                            }
-
-                            categorizedVectorLayers[tileLayer.Name].Add(tileLayer);
-                        }
-                    }
-                }
-                else if (layer.Source.Type == "raster")
-                {
-                    if (!rasterTileCache.ContainsKey(layer.Source) && layer.Source.Provider is not null)
-                    {
-                        byte[] tile = await layer.Source.Provider.GetTileAsync(x, y, (int)zoom);
-
-                        if (tile == null)
-                        {
-                            continue;
-                        }
-
-                        rasterTileCache[layer.Source] = tile;
                     }
 
-                    if (rasterTileCache.ContainsKey(layer.Source) && style.ValidateLayer(layer, (int)zoom, null))
+                    foreach (var tileLayer in tile.Layers)
                     {
-                        var brush = style.ParseStyle(layer, scale, new Dictionary<string, object>());
-
-                        if (!brush.Paint.Visibility)
+                        if (!categorizedVectorLayers.ContainsKey(tileLayer.Name))
                         {
-                            continue;
+                            categorizedVectorLayers[tileLayer.Name] = new();
                         }
 
-                        visualLayers.Add(new VisualLayer()
-                        {
-                            Type = VisualLayerType.Raster,
-                            RasterData = rasterTileCache[layer.Source],
-                            Brush = brush,
-                        });
+                        categorizedVectorLayers[tileLayer.Name].Add(tileLayer);
                     }
                 }
 
@@ -145,7 +143,7 @@ public static class TileRendererFactory
                                     continue;
                                 }
 
-                                visualLayers.Add(new VisualLayer()
+                                visualLayers.Add(new()
                                 {
                                     Type = VisualLayerType.Vector,
                                     VectorTileFeature = feature,
@@ -168,6 +166,11 @@ public static class TileRendererFactory
             }
         }
 
+        return RenderVisualLayers(canvas, visualLayers);
+    }
+
+    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers)
+    {
         // defered rendering to preserve text drawing order
         foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
         {
@@ -211,12 +214,12 @@ public static class TileRendererFactory
                     }
                     else
                     {
-                        log.Debug($"unknown Geometry type {feature.GeometryType}");
+                        Log.Debug($"unknown Geometry type {feature.GeometryType}");
                     }
                 }
                 catch (Exception e)
                 {
-                    log.Error(e);
+                    Log.Error(e);
                 }
             }
             else if (layer.Type == VisualLayerType.Raster)

@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tiles", "tiles", "{7F818319
 		tiles\zurich.mbtiles = tiles\zurich.mbtiles
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Data", "source\VexTile.Data\VexTile.Data.csproj", "{6D5006BE-F6DA-407A-BFDF-B4BC7948D68E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,5 +61,9 @@ Global
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D5006BE-F6DA-407A-BFDF-B4BC7948D68E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D5006BE-F6DA-407A-BFDF-B4BC7948D68E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D5006BE-F6DA-407A-BFDF-B4BC7948D68E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D5006BE-F6DA-407A-BFDF-B4BC7948D68E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
