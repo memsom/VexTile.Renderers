@@ -9,6 +9,7 @@ using VexTile.Data.Sources;
 using VexTile.Renderer.Mvt.AliFlux;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
+using TileInfo = BruTile.TileInfo;
 
 namespace VexTile.TileSource.Mvt;
 

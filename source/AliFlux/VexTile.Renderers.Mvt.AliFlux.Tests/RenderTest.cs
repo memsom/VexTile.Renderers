@@ -24,7 +24,7 @@ public class RenderTest
         var dataSource = new SqliteDataSource(val);
         var provider = new VectorTilesSource(dataSource);
         style.SetSourceProvider("openmaptiles", provider);
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, 0, 0, 0);
+        var tile = await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0, 0, 0));
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
@@ -54,7 +54,7 @@ public class RenderTest
 
         var provider = new PbfTileSource(bytes);
         style.SetSourceProvider("openmaptiles", provider);
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, 0, 0, 0);
+        var tile = await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0));
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
@@ -82,7 +82,7 @@ public class RenderTest
         var dataSource = new SqliteDataSource(path);
         var renderer = new TileRenderer(dataSource, VectorStyleKind.Default);
 
-        var tile = await renderer.RenderTileAsync(canvas, 0, 0, 0);
+        var tile = await renderer.RenderTileAsync(canvas, new (0, 0, 0));
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);

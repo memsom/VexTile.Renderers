@@ -12,13 +12,10 @@ public static class TileRendererFactory
 {
     private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
 
-    // public static async Task<byte[]> RenderAsync(VectorStyle style, VectorTile tile, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null)
-    // {
-    //
-    // }
-
     /// <summary>
     /// Renders a tile at {x,y} with the given zoom level from the attached Provider using the style
+    ///
+    /// This is now a legacy compatibility helper as we can use the TileInfo instead
     /// </summary>
     /// <param name="style">the style to use</param>
     /// <param name="canvas">the canvas to draw to</param>
@@ -29,25 +26,35 @@ public static class TileRendererFactory
     /// <param name="sizeY">optional height size for the tile, defaults to 512</param>
     /// <param name="scale">optional scale, defaults to 1</param>
     /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
-    /// <returns></returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null)
+    /// <returns>a png</returns>
+    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null) =>
+        await  RenderAsync(style, canvas,
+            new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers));
+
+    /// <summary>
+    /// This is basically to avoid a lot of boilerplate
+    /// </summary>
+    /// <param name="style">the style to apply</param>
+    /// <param name="canvas">the canvas to draw on</param>
+    /// <param name="tileData">contains all the tile information</param>
+    /// <returns>a png</returns>
+    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData)
     {
-        Dictionary<Source, byte[]> rasterTileCache = new();
         Dictionary<Source, VectorTile> vectorTileCache = new();
         Dictionary<string, List<VectorTileLayer>> categorizedVectorLayers = new();
 
-        double actualZoom = zoom;
+        double actualZoom = tileData.Zoom;
 
-        if (sizeX < 1024)
+        if (tileData.SizeX < 1024)
         {
-            double ratio = 1024 / sizeX;
+            double ratio = 1024 / tileData.SizeX;
             double zoomDelta = Math.Log(ratio, 2);
 
-            actualZoom = zoom - zoomDelta;
+            actualZoom = tileData.Zoom - zoomDelta;
         }
 
-        sizeX *= scale;
-        sizeY *= scale;
+        var sizeX = tileData.ScaledSizeX;
+        var sizeY = tileData.ScaledSizeY;
 
         canvas.StartDrawing(sizeX, sizeY);
 
@@ -56,7 +63,10 @@ public static class TileRendererFactory
         // refactor this messy block
         foreach (var layer in style.Layers)
         {
-            if (whiteListLayers != null && layer.Type != "background" && layer.SourceLayer != "" && !whiteListLayers.Contains(layer.SourceLayer))
+            if (tileData.LayerWhiteList != null &&
+                layer.Type != "background" &&
+                layer.SourceLayer != "" &&
+                !tileData.LayerWhiteList.Contains(layer.SourceLayer))
             {
                 continue;
             }
@@ -65,10 +75,11 @@ public static class TileRendererFactory
             {
                 if (layer.Source.Type == "raster")
                 {
-                    // we are no longer supporting rater as a source because the
+                    // we are no longer supporting raster as a source because the
                     // raster code seems to have been reading from a file. We can
-                    // add a proper tile reader if needed, but for now we were not
-                    // doing anything useful with this source anyway
+                    // add a proper tile reader to access the mbtiles file if
+                    // needed, but for now we were not doing anything useful with
+                    // this source anyway
                     continue;
                 }
 
@@ -78,7 +89,7 @@ public static class TileRendererFactory
 
                     // we should be able to
                     if (source is IVectorTileSource vectorSource)
-                        tile = await vectorSource.GetVectorTileAsync(x, y, (int)zoom);
+                        tile = await vectorSource.GetVectorTileAsync(tileData.X, tileData.Y, (int)tileData.Zoom);
                     else if (source is IPbfTileSource pbfSource) tile = await pbfSource.GetTileAsync();
 
                     if (tile == null)
@@ -136,7 +147,7 @@ public static class TileRendererFactory
 
                             if (style.ValidateLayer(layer, actualZoom, attributes))
                             {
-                                var brush = style.ParseStyle(layer, scale, attributes);
+                                var brush = style.ParseStyle(layer, tileData.Scale, attributes);
 
                                 if (!brush.Paint.Visibility)
                                 {
@@ -158,7 +169,7 @@ public static class TileRendererFactory
             }
             else if (layer.Type == "background")
             {
-                var brushes = style.GetStyleByType("background", actualZoom, scale);
+                var brushes = style.GetStyleByType("background", actualZoom, tileData.Scale);
                 foreach (var brush in brushes)
                 {
                     canvas.DrawBackground(brush);

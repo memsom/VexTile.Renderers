@@ -35,7 +35,12 @@ public class TileRenderer : ITileRenderer
         double sizeX = 512, double sizeY = 512,
         double scale = 1,
         List<string> whiteListLayers = null) =>
-        TileRendererFactory.RenderAsync(style, canvas, x, y, zoom, sizeX, sizeY, scale, whiteListLayers);
+        TileRendererFactory.RenderAsync(style, canvas, new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers));
+
+    public Task<byte[]> RenderTileAsync(
+        ICanvas canvas,
+        TileInfo tileData) =>
+        TileRendererFactory.RenderAsync(style, canvas, tileData);
 
     protected virtual void Dispose(bool disposing)
     {

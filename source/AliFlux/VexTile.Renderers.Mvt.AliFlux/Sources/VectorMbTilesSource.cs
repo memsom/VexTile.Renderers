@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using VexTile.Common.Sources;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
@@ -12,17 +12,17 @@ namespace VexTile.Renderer.Mvt.AliFlux.Sources;
 
 // MbTiles loading code in GIST by geobabbler
 // https://gist.github.com/geobabbler/9213392
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public class VectorTilesSource : IVectorTileSource
 {
-    static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
     public GeoExtent? Bounds { get; private set; }
     public CoordinatePair? Center { get; private set; }
-    public int MinZoom { get; private set; } = 0;
-    public int MaxZoom { get; private set; } = 0;
+    public int MinZoom { get; private set; }
+    public int MaxZoom { get; private set; }
     public string? Name { get; private set; }
     public string? Description { get; private set; }
     public string? MbTilesVersion { get; private set; }
-    public string? Path { get; private set; }
 
     private readonly ConcurrentDictionary<string, VectorTile> tileCache = new();
 
@@ -49,39 +49,39 @@ public class VectorTilesSource : IVectorTileSource
                 switch (name.ToLower())
                 {
                     case "bounds":
-                        string val = item.Value;
-                        string[] vals = val.Split(',');
-                        this.Bounds = new GeoExtent
+                        string value = item.Value;
+                        string[] values = value.Split(',');
+                        Bounds = new GeoExtent
                         {
-                            West = Convert.ToDouble(vals[0]),
-                            South = Convert.ToDouble(vals[1]),
-                            East = Convert.ToDouble(vals[2]),
-                            North = Convert.ToDouble(vals[3])
+                            West = Convert.ToDouble(values[0]),
+                            South = Convert.ToDouble(values[1]),
+                            East = Convert.ToDouble(values[2]),
+                            North = Convert.ToDouble(values[3])
                         };
                         break;
                     case "center":
-                        val = item.Value;
-                        vals = val.Split(',');
-                        this.Center = new CoordinatePair
+                        value = item.Value;
+                        values = value.Split(',');
+                        Center = new CoordinatePair
                         {
-                            X = Convert.ToDouble(vals[0]),
-                            Y = Convert.ToDouble(vals[1])
+                            X = Convert.ToDouble(values[0]),
+                            Y = Convert.ToDouble(values[1])
                         };
                         break;
                     case "minzoom":
-                        this.MinZoom = Convert.ToInt32(item.Value);
+                        MinZoom = Convert.ToInt32(item.Value);
                         break;
                     case "maxzoom":
-                        this.MaxZoom = Convert.ToInt32(item.Value);
+                        MaxZoom = Convert.ToInt32(item.Value);
                         break;
                     case "name":
-                        this.Name = item.Value;
+                        Name = item.Value;
                         break;
                     case "description":
-                        this.Description = item.Value;
+                        Description = item.Value;
                         break;
                     case "version":
-                        this.MbTilesVersion = item.Value;
+                        MbTilesVersion = item.Value;
                         break;
                 }
             }
@@ -92,17 +92,15 @@ public class VectorTilesSource : IVectorTileSource
         }
     }
 
-    // converted to use Sqlite-Net
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1168:Empty arrays and collections should be returned instead of null", Justification = "<Pending>")]
-    public byte[]? GetRawTile(int x, int y, int zoom)
+    private byte[]? GetRawTile(int x, int y, int zoom)
     {
         try
         {
             var found = sharedDataSource.GetTile(x, y, zoom);
 
-            if (found is { } tiles)
+            if (found is not null)
             {
-                return tiles.TileData;
+                return found.TileData;
             }
         }
         catch
@@ -111,25 +109,6 @@ public class VectorTilesSource : IVectorTileSource
         }
 
         return null;
-    }
-
-    public void ExtractTile(int x, int y, int zoom, string path)
-    {
-        if (File.Exists(path))
-        {
-            File.Delete(path);
-        }
-
-        using (var fileStream = File.Create(path))
-        using (var bfw = new BinaryWriter(fileStream))
-        {
-            if (GetRawTile(x, y, zoom) is { } bytes)
-            {
-                bfw.Write(bytes);
-            }
-
-            bfw.Close();
-        }
     }
 
     public async Task<VectorTile?> GetVectorTileAsync(int x, int y, int zoom)
@@ -205,7 +184,7 @@ public class VectorTilesSource : IVectorTileSource
         }
         catch (Exception e)
         {
-            log.Error(e);
+            Log.Error(e);
             return null;
         }
     }
@@ -228,7 +207,7 @@ public class VectorTilesSource : IVectorTileSource
                 if (GetRawTile(x, y, zoom) is { } rawTileStream)
                 {
                     var pbfTileProvider = new PbfTileSource(rawTileStream);
-                    var tile = pbfTileProvider.GetTileAsync().Result;
+                    var tile = pbfTileProvider.GetTileAsync().Result; // we need to make this use await
                     tileCache[key] = tile;
 
                     return tile;
