@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Avalonia.Controls;
 using BruTile.MbTiles;
 using Mapsui;
@@ -51,13 +52,31 @@ public partial class MainWindow : Window
 
         var mvtSource = new MvtSource(@"zurich.mbtiles");
 
-        foreach (var tile in mvtSource.GetVectorTiles(3))
+        for (int zoom = 0; zoom < 18; zoom++)
         {
-            ProcessTileData(tile);
+            foreach (var tile in mvtSource.GetVectorTiles(zoom))
+            {
+                ProcessTileData(tile, zoom);
+            }
         }
     }
 
-    private void ProcessTileData(VectorTile? tile)
+    double GetMin(int zoom)
+    {
+
+        if (zoom <= 0) return MapControl.Map.Navigator.Resolutions.First();
+        if (zoom >= MapControl.Map.Navigator.Resolutions.Count) return MapControl.Map.Navigator.Resolutions.Last();
+        return MapControl.Map.Navigator.Resolutions[zoom];
+    }
+    double GetMax(int zoom)
+    {
+        var actual = zoom + 1;
+        if (actual <= 0) return MapControl.Map.Navigator.Resolutions.First();
+        if (actual >= MapControl.Map.Navigator.Resolutions.Count) return MapControl.Map.Navigator.Resolutions.Last();
+        return MapControl.Map.Navigator.Resolutions[actual];
+    }
+
+    private void ProcessTileData(VectorTile? tile, int? zoom = null)
     {
         if (tile == null) return;
 
@@ -74,10 +93,17 @@ public partial class MainWindow : Window
                         Fill = new Brush(Color.Blue),
                         Outline = new Pen(Color.Red)
                     };
+
+                    if (zoom is {} valid)
+                    {
+                        vstyle.MaxVisible = GetMax(valid);
+                    }
+
                     item.Styles.Add(vstyle);
                     _features.Add(item);
                 }
             }
+
 
             if (layer.Name == "landcover")
             {
@@ -89,10 +115,18 @@ public partial class MainWindow : Window
                         Fill = new Brush(Color.Yellow),
                         Outline = new Pen(Color.Orange)
                     };
+
+                    if (zoom is {} valid)
+                    {
+                        vstyle.MaxVisible = GetMax(valid);
+                    }
+
                     item.Styles.Add(vstyle);
                     _features.Add(item);
                 }
             }
+
+            continue; // temp
 
             if (layer.Name == "boundary")
             {
@@ -104,6 +138,12 @@ public partial class MainWindow : Window
                         Fill = new Brush(Color.Black),
                         Outline = new Pen(Color.Black)
                     };
+
+                    if (zoom is {} valid)
+                    {
+                        vstyle.MaxVisible = GetMax(valid);
+                    }
+
                     item.Styles.Add(vstyle);
                     _features.Add(item);
                 }
@@ -119,6 +159,12 @@ public partial class MainWindow : Window
                         Fill = new Brush(Color.Transparent),
                         Outline = new Pen(Color.Transparent)
                     };
+
+                    if (zoom is {} valid)
+                    {
+                        vstyle.MinVisible = GetMin(valid);
+                    }
+
                     item.Styles.Add(vstyle);
 
                     if (feature.Attributes.GetOptionalValue("name") is { } name)
@@ -127,6 +173,12 @@ public partial class MainWindow : Window
                         {
                             Text = name.ToString(),
                         };
+
+                        if (zoom is {} validlabel)
+                        {
+                            labelStyle.MinVisible = GetMin(validlabel);
+                        }
+
                         item.Styles.Add(labelStyle);
                     }
 
@@ -145,6 +197,10 @@ public partial class MainWindow : Window
                         Fill = new Brush(Color.Transparent),
                         Outline = new Pen(Color.Transparent)
                     };
+                    if (zoom is {} valid)
+                    {
+                        vstyle.MinVisible = GetMin(valid);
+                    }
                     item.Styles.Add(vstyle);
 
                     if (feature.Attributes.GetOptionalValue("name:en") is { } name)
@@ -153,6 +209,11 @@ public partial class MainWindow : Window
                         {
                             Text = name.ToString(),
                         };
+
+                        if (zoom is {} validlabel)
+                        {
+                            labelStyle.MaxVisible = GetMin(validlabel+1);
+                        }
                         item.Styles.Add(labelStyle);
                     }
 
