@@ -7,9 +7,13 @@
     <PackageVersion Include="BruTile" Version="5.0.6" />
     <PackageVersion Include="BruTile.MbTiles" Version="5.0.6" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+    <PackageVersion Include="Mapsui" Version="5.0.0-beta.11" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageVersion Include="NetTopologySuite.IO.VectorTiles" Version="1.1.0" />
+    <PackageVersion Include="NetTopologySuite.IO.VectorTiles.Mapbox" Version="1.1.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="NLog" Version="5.0.0" />
+    <PackageVersion Include="protobuf-net" Version="3.2.46" />
     <PackageVersion Include="SkiaSharp" Version="2.88.7" />
     <PackageVersion Include="sqlite-net-pcl" Version="1.8.116" />
     <PackageVersion Include="Svg" Version="3.4.7" />
