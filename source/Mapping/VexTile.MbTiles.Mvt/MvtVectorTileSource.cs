@@ -4,9 +4,12 @@ using BruTile.MbTiles;
 using BruTile.Predefined;
 using SQLite;
 using VexTile.Common.Enums;
+using VexTile.Data;
+using VexTile.Data.Sources;
 using VexTile.Renderer.Mvt.AliFlux;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
+using TileInfo = BruTile.TileInfo;
 
 namespace VexTile.TileSource.Mvt;
 
@@ -73,7 +76,8 @@ public class MvtVectorTileSource : ITileSource
         }
 
         _style = new VectorStyle(styleKind);
-        var provider = new VectorTilesSource(new SQLiteConnection(connectionString));
+        var dataSource = new SqliteDataSource(connectionString);
+        var provider = new VectorTilesSource(dataSource);
         _style.SetSourceProvider(styleProviderName, provider);
     }
 

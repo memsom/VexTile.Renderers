@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\AliFlux\VexTile.Renderers.Mvt.AliFlux\VexTile.Renderer.Mvt.AliFlux.csproj" />
+        <ProjectReference Include="..\..\VexTile.Data\VexTile.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>

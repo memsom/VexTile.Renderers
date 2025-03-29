@@ -175,22 +175,6 @@ public class VectorStyle : IVectorStyle
         Hash = Utils.Sha256(json);
     }
 
-
-    public void SetSourceProvider(int index, IBasicTileSource provider)
-    {
-        int i = 0;
-        foreach (var pair in Sources)
-        {
-            if (index == i)
-            {
-                pair.Value.Provider = provider;
-                return;
-            }
-
-            i++;
-        }
-    }
-
     public void SetSourceProvider(string name, IBasicTileSource provider)
     {
         Sources[name].Provider = provider;
