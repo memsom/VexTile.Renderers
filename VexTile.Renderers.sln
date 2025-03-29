@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{91E5AD39-7402-4D0A-BB0F-9B21C48283F9}"
 	ProjectSection(SolutionItems) = preProject
-		LICENSE = LICENSE
-		README.md = README.md
 		.gitignore = .gitignore
-		images\logo.png = images\logo.png
-		Directory.Packages.props = Directory.Packages.props
 		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		LICENSE = LICENSE
+		images\logo.png = images\logo.png
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AliFlux", "AliFlux", "{524E5240-2A32-4B31-8329-A6A3CB0ADC5F}"
@@ -30,17 +33,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tiles", "tiles", "{7F818319
 		tiles\zurich.mbtiles = tiles\zurich.mbtiles
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataSources", "DataSources", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60740B31-4437-4B25-B266-E08E9CB793C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readers", "Readers", "{3DC520CC-855B-46B8-9679-752FA2F6A9AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Readers.Tests", "tests\VexTile.Readers.Tests\VexTile.Readers.Tests.csproj", "{6CB00835-FC1F-E2CB-67A3-804C64002EC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSources.Tests", "tests\VexTile.DataSources.Tests\VexTile.DataSources.Tests.csproj", "{A80B8953-B2DB-6562-9097-A701508C1416}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSources", "source\DataSources\VexTile.DataSources\VexTile.DataSources.csproj", "{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Readers", "source\Readers\VexTile.Readers\VexTile.Readers.csproj", "{9B158DFB-6D38-8A67-4F48-735E59EAF620}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{524E5240-2A32-4B31-8329-A6A3CB0ADC5F} = {E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}
-		{B1E58241-A026-4DF9-8EC6-7613CC309591} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
-		{8581D51C-7311-41B0-A2C2-AE479F0844AF} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
-		{8F525597-1FBA-476F-8FB7-70397910C126} = {B93F42B4-7405-402D-BE86-0940BD932412}
-		{7F818319-AA94-4F81-B0F4-68A5D161228C} = {91E5AD39-7402-4D0A-BB0F-9B21C48283F9}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B1E58241-A026-4DF9-8EC6-7613CC309591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,5 +69,38 @@ Global
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{524E5240-2A32-4B31-8329-A6A3CB0ADC5F} = {E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}
+		{B1E58241-A026-4DF9-8EC6-7613CC309591} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
+		{8581D51C-7311-41B0-A2C2-AE479F0844AF} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
+		{8F525597-1FBA-476F-8FB7-70397910C126} = {B93F42B4-7405-402D-BE86-0940BD932412}
+		{7F818319-AA94-4F81-B0F4-68A5D161228C} = {91E5AD39-7402-4D0A-BB0F-9B21C48283F9}
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3} = {60740B31-4437-4B25-B266-E08E9CB793C2}
+		{A80B8953-B2DB-6562-9097-A701508C1416} = {60740B31-4437-4B25-B266-E08E9CB793C2}
+		{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620} = {3DC520CC-855B-46B8-9679-752FA2F6A9AA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B7E5C58-5DE8-4E43-BADC-70CFCD54D996}
 	EndGlobalSection
 EndGlobal
