@@ -19,7 +19,7 @@ public class RenderTest
 
         string path = "zurich.mbtiles";
 
-        SQLiteConnectionString val = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
+        var val = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
         var provider = new VectorTilesSource(new SQLiteConnection(val));
         style.SetSourceProvider("openmaptiles", provider);
         var tile = await TileRendererFactory.RenderAsync(style, canvas, 0, 0, 0);
