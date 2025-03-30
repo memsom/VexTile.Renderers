@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using VexTile.Common.Sources;
 
-namespace VexTile.Readers.Mapbox;
+namespace VexTile.Reader.Mapbox;
 
 public class MapboxTileReader : IVectorTileReader
 {

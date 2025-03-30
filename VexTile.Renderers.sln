@@ -45,7 +45,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSources.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSources", "source\DataSources\VexTile.DataSources\VexTile.DataSources.csproj", "{57D5D1B0-3132-D9E2-4FC8-8AF2075212DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Readers", "source\Readers\VexTile.Readers\VexTile.Readers.csproj", "{9B158DFB-6D38-8A67-4F48-735E59EAF620}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Reader.Mapbox", "source\Readers\VexTile.Readers\VexTile.Reader.Mapbox.csproj", "{9B158DFB-6D38-8A67-4F48-735E59EAF620}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{0FC1822F-7178-4AB2-9ECA-95A023A63A46}"
 EndProject

@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\source\DataSources\VexTile.DataSources\VexTile.DataSources.csproj" />
-    <ProjectReference Include="..\..\source\Readers\VexTile.Readers\VexTile.Readers.csproj" />
+    <ProjectReference Include="..\..\source\Readers\VexTile.Readers\VexTile.Reader.Mapbox.csproj" />
     <ProjectReference Include="..\..\source\VexTile.Common\VexTile.Common.csproj" />
   </ItemGroup>
 

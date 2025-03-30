@@ -1,6 +1,5 @@
-﻿using SQLite;
-using VexTile.DataSources.MBTiles;
-using VexTile.Readers.Mapbox;
+﻿using VexTile.DataSources.MBTiles;
+using VexTile.Reader.Mapbox;
 using Xunit;
 
 namespace VexTile.Readers.Tests
