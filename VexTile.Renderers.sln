@@ -1,13 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35913.81
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{91E5AD39-7402-4D0A-BB0F-9B21C48283F9}"
 	ProjectSection(SolutionItems) = preProject
-		LICENSE = LICENSE
-		README.md = README.md
 		.gitignore = .gitignore
-		images\logo.png = images\logo.png
-		Directory.Packages.props = Directory.Packages.props
 		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		LICENSE = LICENSE
+		images\logo.png = images\logo.png
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AliFlux", "AliFlux", "{524E5240-2A32-4B31-8329-A6A3CB0ADC5F}"
@@ -30,17 +33,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tiles", "tiles", "{7F818319
 		tiles\zurich.mbtiles = tiles\zurich.mbtiles
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataSources", "DataSources", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60740B31-4437-4B25-B266-E08E9CB793C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Readers", "Readers", "{3DC520CC-855B-46B8-9679-752FA2F6A9AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Readers.Tests", "tests\VexTile.Readers.Tests\VexTile.Readers.Tests.csproj", "{6CB00835-FC1F-E2CB-67A3-804C64002EC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSources.Tests", "tests\VexTile.DataSources.Tests\VexTile.DataSources.Tests.csproj", "{A80B8953-B2DB-6562-9097-A701508C1416}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.Reader.Mapbox", "source\Readers\VexTile.Readers\VexTile.Reader.Mapbox.csproj", "{9B158DFB-6D38-8A67-4F48-735E59EAF620}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{0FC1822F-7178-4AB2-9ECA-95A023A63A46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.VectorTileReaders.Benchmarks", "benchmarks\VexTile.VectorTileReaders.Benchmarks\VexTile.VectorTileReaders.Benchmarks.csproj", "{9AEC80A5-0B39-F2CC-8E7D-74A7B8EBA13B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSource.MBTilesFolder", "source\datasources\VexTile.DataSource.MBTileFolder\VexTile.DataSource.MBTilesFolder\VexTile.DataSource.MBTilesFolder.csproj", "{7B6995EF-37F7-4668-B001-ACF6CC7518E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VexTile.DataSource.MBTilesSQLite", "source\DataSources\VexTile.DataSource.MBTilesSQLite\VexTile.DataSource.MBTilesSQLite.csproj", "{6DF0537C-8901-26A3-F93D-A50AFD62B83E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{524E5240-2A32-4B31-8329-A6A3CB0ADC5F} = {E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}
-		{B1E58241-A026-4DF9-8EC6-7613CC309591} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
-		{8581D51C-7311-41B0-A2C2-AE479F0844AF} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
-		{8F525597-1FBA-476F-8FB7-70397910C126} = {B93F42B4-7405-402D-BE86-0940BD932412}
-		{7F818319-AA94-4F81-B0F4-68A5D161228C} = {91E5AD39-7402-4D0A-BB0F-9B21C48283F9}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B1E58241-A026-4DF9-8EC6-7613CC309591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,5 +75,48 @@ Global
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{802FCE68-9F38-4140-B7B2-FE41B8866888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80B8953-B2DB-6562-9097-A701508C1416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AEC80A5-0B39-F2CC-8E7D-74A7B8EBA13B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AEC80A5-0B39-F2CC-8E7D-74A7B8EBA13B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AEC80A5-0B39-F2CC-8E7D-74A7B8EBA13B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AEC80A5-0B39-F2CC-8E7D-74A7B8EBA13B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B6995EF-37F7-4668-B001-ACF6CC7518E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B6995EF-37F7-4668-B001-ACF6CC7518E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B6995EF-37F7-4668-B001-ACF6CC7518E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B6995EF-37F7-4668-B001-ACF6CC7518E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DF0537C-8901-26A3-F93D-A50AFD62B83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DF0537C-8901-26A3-F93D-A50AFD62B83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DF0537C-8901-26A3-F93D-A50AFD62B83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DF0537C-8901-26A3-F93D-A50AFD62B83E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{524E5240-2A32-4B31-8329-A6A3CB0ADC5F} = {E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}
+		{B1E58241-A026-4DF9-8EC6-7613CC309591} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
+		{8581D51C-7311-41B0-A2C2-AE479F0844AF} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
+		{8F525597-1FBA-476F-8FB7-70397910C126} = {B93F42B4-7405-402D-BE86-0940BD932412}
+		{7F818319-AA94-4F81-B0F4-68A5D161228C} = {91E5AD39-7402-4D0A-BB0F-9B21C48283F9}
+		{6CB00835-FC1F-E2CB-67A3-804C64002EC3} = {60740B31-4437-4B25-B266-E08E9CB793C2}
+		{A80B8953-B2DB-6562-9097-A701508C1416} = {60740B31-4437-4B25-B266-E08E9CB793C2}
+		{9B158DFB-6D38-8A67-4F48-735E59EAF620} = {3DC520CC-855B-46B8-9679-752FA2F6A9AA}
+		{9AEC80A5-0B39-F2CC-8E7D-74A7B8EBA13B} = {0FC1822F-7178-4AB2-9ECA-95A023A63A46}
+		{7B6995EF-37F7-4668-B001-ACF6CC7518E5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{6DF0537C-8901-26A3-F93D-A50AFD62B83E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B7E5C58-5DE8-4E43-BADC-70CFCD54D996}
 	EndGlobalSection
 EndGlobal

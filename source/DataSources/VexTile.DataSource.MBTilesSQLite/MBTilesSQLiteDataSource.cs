@@ -1,31 +1,20 @@
-﻿using System.Globalization;
-using BruTile;
-using BruTile.MbTiles;
+﻿using BruTile;
 using BruTile.Predefined;
+using NetTopologySuite.IO.VectorTiles.Tiles;
 using SQLite;
-using VexTile.Common.Enums;
-using VexTile.Renderer.Mvt.AliFlux;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
-using VexTile.Renderer.Mvt.AliFlux.Sources;
+using System.Globalization;
+using VexTile.Common.Sources;
+using VexTile.DataSource.MBTilesSQLite.Tables;
 
-namespace VexTile.TileSource.Mvt;
+namespace VexTile.DataSource.MBTilesSQLite;
 
 /// <summary>
-/// An <see cref="ITileSource"/> implementation for MapBox Vector Tiles files
+/// An <see cref="IDataSource"/> implementation for MapBox database files
 /// </summary>
-/// <seealso href="https://www.mapbox.com/developers/mbtiles/"/>
-public class MvtVectorTileSource : ITileSource
+public class MBTilesSQLiteDataSource : IDataSource
 {
-    public MbTilesType Type { get; }
-    public string Version { get; }
-    public string Description { get; }
-    public string Json { get; }
-    public string Compression { get; }
-
     private readonly SQLiteConnectionString _connectionString;
-    private readonly Dictionary<int, TileRange>? _tileRange;
-
-    private readonly VectorStyle _style;
+    private readonly Dictionary<int, NetTopologySuite.IO.VectorTiles.Tiles.TileRange>? _tileRange;
 
     ///  <summary>
     /// 
@@ -46,9 +35,11 @@ public class MvtVectorTileSource : ITileSource
     ///  from the tiles table. The default is false.</param>
     ///  <param name="styleKind">The style to use for the rendering</param>
     ///  <param name="styleProviderName">the name of the style's provider name</param>
-    public MvtVectorTileSource(SQLiteConnectionString connectionString, ITileSchema? schema = null, MbTilesType type = MbTilesType.None,
-        bool determineZoomLevelsFromTilesTable = false, bool determineTileRangeFromTilesTable = false, 
-        VectorStyleKind styleKind = VectorStyleKind.Default, string styleProviderName = "openstreetmap")
+    public MBTilesSQLiteDataSource(SQLiteConnectionString connectionString,
+        ITileSchema? schema = null,
+        MbTilesType type = MbTilesType.None,
+        bool determineZoomLevelsFromTilesTable = false,
+        bool determineTileRangeFromTilesTable = false)
     {
         if (!File.Exists(connectionString.DatabasePath))
             throw new FileNotFoundException($"The mbtiles file does not exist: '{connectionString.DatabasePath}'", connectionString.DatabasePath);
@@ -56,6 +47,7 @@ public class MvtVectorTileSource : ITileSource
         _connectionString = connectionString;
 
         using var connection = new SQLiteConnection(connectionString);
+
         Schema = schema ?? ReadSchemaFromDatabase(connection, determineZoomLevelsFromTilesTable);
         Type = type == MbTilesType.None ? ReadType(connection) : type;
         Version = ReadString(connection, "version");
@@ -71,19 +63,91 @@ public class MvtVectorTileSource : ITileSource
             var zoomLevelsFromDatabase = Schema.Resolutions.Select(r => r.Key);
             _tileRange = ReadTileRangeForEachLevelFromTilesTable(connection, zoomLevelsFromDatabase);
         }
+    }
 
-        _style = new VectorStyle(styleKind);
-        var provider = new VectorTilesSource(new SQLiteConnection(connectionString));
-        _style.SetSourceProvider(styleProviderName, provider);
+    public MBTilesSQLiteDataSource(string path,
+        ITileSchema? schema = null,
+        MbTilesType type = MbTilesType.None,
+        bool determineZoomLevelsFromTilesTable = false,
+        bool determineTileRangeFromTilesTable = false) 
+        : this(new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false), schema, type, determineZoomLevelsFromTilesTable, determineTileRangeFromTilesTable)
+    {
+    }
+
+    /// <summary>
+    /// Type of MBTiles file
+    /// </summary>
+    public MbTilesType Type { get; }
+
+    /// <summary>
+    /// Version of MBTiles files content
+    /// </summary>
+    public string Version { get; }
+
+    /// <summary>
+    /// Description for MBTiles file content
+    /// </summary>
+    public string Description { get; }
+
+    /// <summary>
+    /// JSON string containing extra information about MBTiles file content
+    /// </summary>
+    public string Json { get; }
+
+    /// <summary>
+    /// Compression type of MBTiles file
+    /// </summary>
+    public string Compression { get; }
+
+    /// <summary>
+    /// TileSchema of MBTiles file content
+    /// </summary>
+    public ITileSchema Schema { get; }
+
+    /// <summary>
+    /// Name of MBTiles file content
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
+    /// Attribution for MBTiles file content
+    /// </summary>
+    public Attribution Attribution { get; set; }
+
+    /// <summary>
+    /// Get binary data for tile from database
+    /// </summary>
+    /// <param name="tileInfo">Tile to get binary data for</param>
+    /// <returns>Task which returns binary data</returns>
+    public async Task<byte[]?> GetTileAsync(Tile tile)
+    {
+        if (!IsTileIndexValid(tile))
+            return null;
+
+        byte[] result;
+
+        try
+        {
+            var cn = new SQLiteAsyncConnection(_connectionString);
+            {
+                var sql = "SELECT tile_data FROM \"tiles\" WHERE zoom_level=? AND tile_row=? AND tile_column=?;";
+                result = await cn.ExecuteScalarAsync<byte[]>(sql, tile.Zoom, tile.Y, tile.X).ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(ex.Message);
+            return null;
+        }
+
+        return result == null || result.Length == 0 ? null : result;
     }
 
     private static ITileSchema ReadSchemaFromDatabase(SQLiteConnection connection, bool determineZoomLevelsFromTilesTable)
     {
         // ReadZoomLevels can return null. This is no problem. GlobalSphericalMercator will initialize with default values
         var zoomLevels = ReadZoomLevels(connection);
-
-        var format = ReadFormat(connection); // we really only want this to be pbf, and if it is not, that is an issue
-
+        var format = ReadFormat(connection);
         var extent = ReadExtent(connection);
 
         if (determineZoomLevelsFromTilesTable)
@@ -112,6 +176,7 @@ public class MvtVectorTileSource : ITileSource
     private static string ReadString(SQLiteConnection connection, string name)
     {
         const string sql = "SELECT \"value\" FROM metadata WHERE \"name\"=?;";
+
         try
         {
             return connection.ExecuteScalar<string>(sql, name);
@@ -125,6 +190,7 @@ public class MvtVectorTileSource : ITileSource
     private static int? ReadInt(SQLiteConnection connection, string name)
     {
         const string sql = "SELECT \"value\" FROM metadata WHERE \"name\"=?;";
+
         try
         {
             return connection.ExecuteScalar<int?>(sql, name);
@@ -138,6 +204,7 @@ public class MvtVectorTileSource : ITileSource
     private static Extent ReadExtent(SQLiteConnection connection)
     {
         const string sql = "SELECT \"value\" FROM metadata WHERE \"name\"=?;";
+
         try
         {
 
@@ -159,11 +226,59 @@ public class MvtVectorTileSource : ITileSource
         }
     }
 
+    private static int[] ReadZoomLevelsFromTilesTable(SQLiteConnection connection)
+    {
+        // Note: This can be slow
+        var sql = "SELECT DISTINCT zoom_level AS level FROM tiles";
+        var zoomLevelsObjects = connection.Query<ZoomLevel>(sql);
+        var zoomLevels = zoomLevelsObjects.Select(z => z.Level).ToArray();
+
+        return zoomLevels;
+    }
+
+    private static Dictionary<int, NetTopologySuite.IO.VectorTiles.Tiles.TileRange> ReadTileRangeForEachLevelFromTilesTable(SQLiteConnection connection, IEnumerable<int> zoomLevels)
+    {
+        var tableName = "tiles";
+        var tileRange = new Dictionary<int, NetTopologySuite.IO.VectorTiles.Tiles.TileRange>();
+
+        foreach (var zoomLevel in zoomLevels)
+        {
+            var sql = $"SELECT MIN(tile_column) AS tc_min, max(tile_column) AS tc_max, min(tile_row) AS tr_min, max(tile_row) AS tr_max FROM {tableName} WHERE zoom_level = {zoomLevel};";
+            var rangeForLevel = connection.Query<ZoomLevelMinMax>(sql).First();
+            tileRange.Add(zoomLevel, rangeForLevel.ToTileRange(zoomLevel));
+        }
+
+        return tileRange;
+    }
+
+    private static MbTilesFormat ReadFormat(SQLiteConnection connection)
+    {
+        var sql = "SELECT \"value\" FROM metadata WHERE \"name\"=\"format\";";
+        var formatString = connection.ExecuteScalar<string>(sql);
+
+        if (Enum.TryParse<MbTilesFormat>(formatString, true, out var format))
+            return format;
+        
+        return MbTilesFormat.Png;
+    }
+
+    private static MbTilesType ReadType(SQLiteConnection connection)
+    {
+        var sql = "SELECT \"value\" FROM metadata WHERE \"name\"=\"type\";";
+        var typeString = connection.ExecuteScalar<string>(sql);
+
+        if (Enum.TryParse<MbTilesType>(typeString, true, out var type))
+            return type;
+
+        return MbTilesType.BaseLayer;
+    }
+
     private static Extent ToMercator(Extent extent)
     {
         var minX = extent.MinX;
         var minY = extent.MinY;
         ToMercator(ref minX, ref minY);
+
         var maxX = extent.MaxX;
         var maxY = extent.MaxY;
         ToMercator(ref maxX, ref maxY);
@@ -173,7 +288,7 @@ public class MvtVectorTileSource : ITileSource
 
     private static void ToMercator(ref double mercatorXLon, ref double mercatorYLat)
     {
-        if ((Math.Abs(mercatorXLon) > 180 || Math.Abs(mercatorYLat) > 90))
+        if (Math.Abs(mercatorXLon) > 180 || Math.Abs(mercatorYLat) > 90)
             return;
 
         var num = mercatorXLon * 0.017453292519943295;
@@ -184,120 +299,16 @@ public class MvtVectorTileSource : ITileSource
         mercatorYLat = 3189068.5 * Math.Log((1.0 + Math.Sin(a)) / (1.0 - Math.Sin(a)));
     }
 
-    public async Task<byte[]?> GetTileAsync(TileInfo tileInfo)
-    {
-        var index = tileInfo.Index;
-
-        if (IsTileIndexValid(index))
-        {
-            byte[] result;
-            
-            var canvas = new SkiaCanvas();
-
-            try
-            {
-                result = await TileRendererFactory.RenderAsync(
-                    _style,
-                    canvas,
-                    tileInfo.Index.Col, tileInfo.Index.Row, Convert.ToInt32(tileInfo.Index.Level),
-                    256, 256, 1);
-            }
-            catch(Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
-                return null;
-            }
-
-
-            return result == null || result.Length == 0
-                ? null
-                : result;
-
-        }
-        return null;
-    }
-
-    private static int[] ReadZoomLevelsFromTilesTable(SQLiteConnection connection)
-    {
-        // Note: This can be slow
-        var sql = "select distinct zoom_level as level from tiles";
-        var zoomLevelsObjects = connection.Query<ZoomLevel>(sql);
-        var zoomLevels = zoomLevelsObjects.Select(z => z.Level).ToArray();
-        return zoomLevels;
-    }
-
-    [Table("tiles")]
-    private class ZoomLevel // I would rather just user 'int' instead of this class in Query, but can't get it to work
-    {
-        [Column("level")]
-        public int Level { get; set; }
-    }
-
-    private static Dictionary<int, TileRange> ReadTileRangeForEachLevelFromTilesTable(SQLiteConnection connection, IEnumerable<int> zoomLevels)
-    {
-        var tableName = "tiles";
-        var tileRange = new Dictionary<int, TileRange>();
-        foreach (var zoomLevel in zoomLevels)
-        {
-            var sql = $"select min(tile_column) AS tc_min, max(tile_column) AS tc_max, min(tile_row) AS tr_min, max(tile_row) AS tr_max from {tableName} where zoom_level = {zoomLevel};";
-            var rangeForLevel = connection.Query<ZoomLevelMinMax>(sql).First();
-            tileRange.Add(zoomLevel, rangeForLevel.ToTileRange());
-        }
-        return tileRange;
-    }
-
-    private static MbTilesFormat ReadFormat(SQLiteConnection connection)
-    {
-        var sql = "SELECT \"value\" FROM metadata WHERE \"name\"=\"format\";";
-        var formatString = connection.ExecuteScalar<string>(sql);
-        if (Enum.TryParse<MbTilesFormat>(formatString, true, out var format))
-            return format;
-        return MbTilesFormat.Png;
-    }
-
-    private static MbTilesType ReadType(SQLiteConnection connection)
-    {
-        var sql = "SELECT \"value\" FROM metadata WHERE \"name\"=\"type\";";
-        var typeString = connection.ExecuteScalar<string>(sql);
-        if (Enum.TryParse<MbTilesType>(typeString, true, out var type))
-            return type;
-        return MbTilesType.BaseLayer;
-    }
-
-    private bool IsTileIndexValid(TileIndex index)
+    private bool IsTileIndexValid(Tile tile)
     {
         if (_tileRange == null)
             return true;
 
         // This is an optimization that makes use of an additional 'map' table which is not part of the spec
-        if (_tileRange.TryGetValue(index.Level, out var tileRange))
-            return
-                tileRange.FirstCol <= index.Col &&
-                index.Col <= tileRange.LastCol &&
-                tileRange.FirstRow <= index.Row &&
-                index.Row <= tileRange.LastRow;
+        if (_tileRange.TryGetValue(tile.Zoom, out var tileRange))
+            return tileRange.XMin <= tile.X && tile.X <= tileRange.XMax &&
+                tileRange.YMin <= tile.Y && tile.Y <= tileRange.YMax;
+
         return false;
-    }
-    public ITileSchema Schema { get; }
-    public string Name { get; }
-    public Attribution Attribution { get; set; }
-
-    [Table("tiles")]
-    private class ZoomLevelMinMax
-    {
-        [Column("tr_min")]
-        public int TileRowMin { get; set; }
-        [Column("tr_max")]
-        public int TileRowMax { get; set; }
-        [Column("tc_min")]
-        public int TileColMin { get; set; }
-        [Column("tc_max")]
-        public int TileColMax { get; set; }
-        // ReSharper restore UnusedAutoPropertyAccessor.Local
-
-        public TileRange ToTileRange()
-        {
-            return new TileRange(TileColMin, TileRowMin, TileColMax - TileColMin + 1, TileRowMax - TileRowMin + 1);
-        }
     }
 }
