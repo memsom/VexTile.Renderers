@@ -1,4 +1,4 @@
-﻿using VexTile.DataSources.MBTiles;
+﻿using VexTile.DataSource.MBTilesSQLite;
 using VexTile.Reader.Mapbox;
 using Xunit;
 
@@ -11,7 +11,7 @@ namespace VexTile.Readers.Tests
         [Fact]
         public async void CheckVectorTileReaderTest()
         {
-            var dataSource = new MBTilesDataSource(_path, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
+            var dataSource = new MBTilesSQLiteDataSource(_path, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
 
             Assert.True(dataSource.Version == "3.6.1");
 

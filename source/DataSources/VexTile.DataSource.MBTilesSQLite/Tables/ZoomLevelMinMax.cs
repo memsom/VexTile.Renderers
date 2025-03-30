@@ -1,7 +1,7 @@
 ﻿using NetTopologySuite.IO.VectorTiles.Tiles;
 using SQLite;
 
-namespace VexTile.DataSource.MBTiles.Tables;
+namespace VexTile.DataSource.MBTilesSQLite.Tables;
 
 [Table("tiles")]
 public class ZoomLevelMinMax

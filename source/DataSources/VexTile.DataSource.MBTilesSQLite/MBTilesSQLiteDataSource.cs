@@ -4,14 +4,14 @@ using NetTopologySuite.IO.VectorTiles.Tiles;
 using SQLite;
 using System.Globalization;
 using VexTile.Common.Sources;
-using VexTile.DataSource.MBTiles.Tables;
+using VexTile.DataSource.MBTilesSQLite.Tables;
 
-namespace VexTile.DataSources.MBTiles;
+namespace VexTile.DataSource.MBTilesSQLite;
 
 /// <summary>
 /// An <see cref="IDataSource"/> implementation for MapBox database files
 /// </summary>
-public class MBTilesDataSource : IDataSource
+public class MBTilesSQLiteDataSource : IDataSource
 {
     private readonly SQLiteConnectionString _connectionString;
     private readonly Dictionary<int, NetTopologySuite.IO.VectorTiles.Tiles.TileRange>? _tileRange;
@@ -35,7 +35,7 @@ public class MBTilesDataSource : IDataSource
     ///  from the tiles table. The default is false.</param>
     ///  <param name="styleKind">The style to use for the rendering</param>
     ///  <param name="styleProviderName">the name of the style's provider name</param>
-    public MBTilesDataSource(SQLiteConnectionString connectionString,
+    public MBTilesSQLiteDataSource(SQLiteConnectionString connectionString,
         ITileSchema? schema = null,
         MbTilesType type = MbTilesType.None,
         bool determineZoomLevelsFromTilesTable = false,
@@ -65,7 +65,7 @@ public class MBTilesDataSource : IDataSource
         }
     }
 
-    public MBTilesDataSource(string path,
+    public MBTilesSQLiteDataSource(string path,
         ITileSchema? schema = null,
         MbTilesType type = MbTilesType.None,
         bool determineZoomLevelsFromTilesTable = false,
@@ -288,7 +288,7 @@ public class MBTilesDataSource : IDataSource
 
     private static void ToMercator(ref double mercatorXLon, ref double mercatorYLat)
     {
-        if ((Math.Abs(mercatorXLon) > 180 || Math.Abs(mercatorYLat) > 90))
+        if (Math.Abs(mercatorXLon) > 180 || Math.Abs(mercatorYLat) > 90)
             return;
 
         var num = mercatorXLon * 0.017453292519943295;

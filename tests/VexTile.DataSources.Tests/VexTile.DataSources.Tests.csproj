@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\source\DataSources\VexTile.DataSources\VexTile.DataSources.csproj" />
+    <ProjectReference Include="..\..\source\DataSources\VexTile.DataSource.MBTilesSQLite\VexTile.DataSource.MBTilesSQLite.csproj" />
     <ProjectReference Include="..\..\source\VexTile.Common\VexTile.Common.csproj" />
   </ItemGroup>
 

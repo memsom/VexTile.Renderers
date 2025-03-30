@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace VexTile.DataSource.MBTiles.Tables;
+namespace VexTile.DataSource.MBTilesSQLite.Tables;
 
 [Table("tiles")]
 public class ZoomLevel // I would rather just user 'int' instead of this class in Query, but can't get it to work

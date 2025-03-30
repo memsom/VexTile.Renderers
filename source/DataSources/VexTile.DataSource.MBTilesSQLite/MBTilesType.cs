@@ -2,7 +2,7 @@
 
 // This file was created by Felix Obermaier (www.ivv-aachen.de) 2011.
 
-namespace VexTile.DataSources.MBTiles;
+namespace VexTile.DataSource.MBTilesSQLite;
 
 /// <summary>
 /// Type of tiles

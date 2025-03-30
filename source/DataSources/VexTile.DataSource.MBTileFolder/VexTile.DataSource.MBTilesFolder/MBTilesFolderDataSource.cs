@@ -1,11 +1,11 @@
 ﻿using NetTopologySuite.IO.VectorTiles.Tiles;
 using VexTile.Common.Sources;
 
-namespace VexTile.DataSources.FileStructure;
+namespace VexTile.DataSource.MBTilesFolder;
 
-public class FileDataSource : IDataSource
+public class MBTilesFolderDataSource : IDataSource
 {
-    public FileDataSource(string path = ".\\")
+    public MBTilesFolderDataSource(string path = ".\\")
     {
         Path = path;
     }
