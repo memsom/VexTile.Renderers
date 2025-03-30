@@ -3,14 +3,16 @@ using SQLite;
 using VexTile.Common.Sources;
 using VexTile.DataSources.MBTiles;
 using VexTile.Readers.Mapbox;
+using NetTopologySuite.IO.VectorTiles.Tiles;
 
 namespace VexTile.VectorTileReaders.Benchmarks
 {
     [MemoryDiagnoser]
     public class Benchmarks
     {
-        IDataSource _dataSource;
-        IVectorTileReader _tileReader;
+        IVectorTileReader? _tileReader;
+        Tile _tile = new Tile(8580, 10645, 14);
+        byte[]? _data;
 
         [GlobalSetup]
         public void Setup()
@@ -18,15 +20,16 @@ namespace VexTile.VectorTileReaders.Benchmarks
             string path = "..\\..\\..\\..\\..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
 
             var connection = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
-
-            _dataSource = new MBTilesDataSource(connection, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
-            _tileReader = new MapboxTileReader(_dataSource);
+            var dataSource = new MBTilesDataSource(connection);
+            
+            _tileReader = new MapboxTileReader(dataSource);
+            _data = dataSource.GetTileAsync(_tile).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         [Benchmark]
         public void ReadVectorTile()
         {
-            var tile = _tileReader.ReadVectorTile(new NetTopologySuite.IO.VectorTiles.Tiles.Tile(8580, 10645, 14)).ConfigureAwait(false).GetAwaiter().GetResult();
+            var tile = _tileReader?.ReadVectorTile(_tile, _data).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }

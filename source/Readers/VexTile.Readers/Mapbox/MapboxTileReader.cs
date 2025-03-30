@@ -15,13 +15,16 @@ public class MapboxTileReader : IVectorTileReader
         _tileReader = new NetTopologySuite.IO.VectorTiles.Mapbox.MapboxTileReader();
     }
 
-    public async Task<VectorTile?> ReadVectorTile(NetTopologySuite.IO.VectorTiles.Tiles.Tile tile)
+    public async Task<VectorTile?> ReadVectorTile(NetTopologySuite.IO.VectorTiles.Tiles.Tile tile, byte[]? data = null)
     {
         if (_dataSource == null)
             return new VectorTile();
 
-        var data = await _dataSource.GetTileAsync(tile);
+        // If no data is provided, get it from data source
+        if (data == null)
+            data = await _dataSource.GetTileAsync(tile);
 
+        // Is there any data to use
         if (data == null)
             return null;
 

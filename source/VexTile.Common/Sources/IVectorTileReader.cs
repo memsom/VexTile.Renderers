@@ -5,5 +5,5 @@ namespace VexTile.Common.Sources;
 
 public interface IVectorTileReader
 {
-    Task<VectorTile?> ReadVectorTile(Tile tile);
+    Task<VectorTile?> ReadVectorTile(Tile tile, byte[]? data = null);
 }
