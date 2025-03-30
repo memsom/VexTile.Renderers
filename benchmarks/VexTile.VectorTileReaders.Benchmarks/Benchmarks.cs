@@ -13,22 +13,41 @@ namespace VexTile.VectorTileReaders.Benchmarks
         readonly string _path = "..\\..\\..\\..\\..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
 
         IVectorTileReader? _tileReader;
-        Tile _tile = new Tile(8580, 10645, 14);
-        byte[]? _data;
+        List<Tile> _tiles = new List<Tile> { new Tile(134, 166, 8), new Tile(8580, 10645, 14), new Tile(8581, 10645, 14), new Tile(8580, 10644, 14) };
+        List<byte[]?> _data = new List<byte[]?>();
 
         [GlobalSetup]
         public void Setup()
         {
             var dataSource = new MBTilesDataSource(_path);
-            
+
             _tileReader = new MapboxTileReader(dataSource);
-            _data = dataSource.GetTileAsync(_tile).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            foreach (var tile in _tiles)
+                _data.Add(dataSource.GetTileAsync(tile).ConfigureAwait(false).GetAwaiter().GetResult());
         }
 
         [Benchmark]
-        public void ReadVectorTile()
+        [Arguments(0)]
+        [Arguments(1)]
+        [Arguments(2)]
+        [Arguments(3)]
+        public void ReadVectorTile(int i)
         {
-            var tile = _tileReader?.ReadVectorTile(_tile, _data).ConfigureAwait(false).GetAwaiter().GetResult();
+            _tileReader?.ReadVectorTile(_tiles[i], _data[i])
+                .ConfigureAwait(false)
+                .GetAwaiter()
+                .GetResult();
+        }
+
+        [Benchmark]
+        public void ReadVectorTiles()
+        {
+            for (var i = 0; i < _tiles.Count(); i++)
+                _tileReader?.ReadVectorTile(_tiles[i], _data[i])
+                    .ConfigureAwait(false)
+                    .GetAwaiter()
+                    .GetResult();
         }
     }
 }
