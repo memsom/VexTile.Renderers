@@ -7,13 +7,12 @@ namespace VexTile.DataSource.Tests;
 
 public class MBTilesDataSourceTests
 {
+    readonly string _path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
+
     [Fact]
     public void CheckMetaDataTest()
     {
-        string path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
-
-        var connection = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
-        var dataSource = new MBTilesDataSource(connection, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
+        var dataSource = new MBTilesDataSource(_path, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
 
         Assert.True(dataSource.Name == "OpenMapTiles");
         Assert.True(dataSource.Description == "Extract from https://openmaptiles.org");
@@ -26,10 +25,7 @@ public class MBTilesDataSourceTests
     [Fact]
     public async Task CheckTileDataTest()
     {
-        string path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
-
-        var connection = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
-        var dataSource = new MBTilesDataSource(connection, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
+        var dataSource = new MBTilesDataSource(_path, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
 
         var tileData = await dataSource.GetTileAsync(new Tile(8580, 10645, 14));
 

@@ -10,6 +10,8 @@ namespace VexTile.VectorTileReaders.Benchmarks
     [MemoryDiagnoser]
     public class Benchmarks
     {
+        readonly string _path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
+
         IVectorTileReader? _tileReader;
         Tile _tile = new Tile(8580, 10645, 14);
         byte[]? _data;
@@ -17,10 +19,7 @@ namespace VexTile.VectorTileReaders.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            string path = "..\\..\\..\\..\\..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
-
-            var connection = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
-            var dataSource = new MBTilesDataSource(connection);
+            var dataSource = new MBTilesDataSource(_path);
             
             _tileReader = new MapboxTileReader(dataSource);
             _data = dataSource.GetTileAsync(_tile).ConfigureAwait(false).GetAwaiter().GetResult();

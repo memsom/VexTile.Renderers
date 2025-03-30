@@ -7,13 +7,12 @@ namespace VexTile.Readers.Tests
 {
     public class MapboxReaderTests
     {
+        readonly string _path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
+
         [Fact]
         public async void CheckVectorTileReaderTest()
         {
-            string path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
-
-            var connection = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
-            var dataSource = new MBTilesDataSource(connection, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
+            var dataSource = new MBTilesDataSource(_path, determineZoomLevelsFromTilesTable: true, determineTileRangeFromTilesTable: true);
 
             Assert.True(dataSource.Version == "3.6.1");
 
