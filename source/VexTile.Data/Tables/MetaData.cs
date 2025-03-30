@@ -1,8 +1,7 @@
 ﻿#nullable disable
 
 using SQLite;
-using VexTile.Common;
-using VexTile.Common.Tables;
+using VexTile.Common.Data;
 
 namespace VexTile.Data.Tables;
 

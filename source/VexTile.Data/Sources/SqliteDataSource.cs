@@ -1,6 +1,7 @@
-﻿using SQLite;
+﻿using NLog;
+using SQLite;
+using VexTile.Common.Data;
 using VexTile.Common.Sources;
-using VexTile.Common.Tables;
 using VexTile.Data.Tables;
 
 namespace VexTile.Data.Sources;
@@ -9,8 +10,9 @@ namespace VexTile.Data.Sources;
 /// This class encapsulated the getting of tile and metadata from the MbTiles file
 /// via a Sqlite connection
 /// </summary>
-public sealed class SqliteDataSource : IMvtTileDataSource
+public sealed class SqliteDataSource : ITileDataSource
 {
+    private readonly Logger log = LogManager.GetCurrentClassLogger();
     private readonly SQLiteConnection sharedConnection;
 
     public SqliteDataSource(string path)
@@ -31,7 +33,7 @@ public sealed class SqliteDataSource : IMvtTileDataSource
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            log.Error(e);
             throw;
         }
     }
@@ -42,7 +44,7 @@ public sealed class SqliteDataSource : IMvtTileDataSource
     /// <returns>the metadata in the connected database</returns>
     public IEnumerable<IMetaData> GetMetaData()
     {
-        foreach (var item in sharedConnection.Table<MetaData>())
+        foreach (MetaData? item in sharedConnection.Table<MetaData>())
         {
             yield return item;
         }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using VexTile.Common.Data;
 using VexTile.Common.Sources;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.GlobalMercator;
@@ -28,10 +29,10 @@ public class VectorTilesSource : IVectorTileSource
 
     private readonly GlobalMercatorImplementation gmt = new();
 
-    private readonly IMvtTileDataSource sharedDataSource;
+    private readonly ITileDataSource sharedDataSource;
 
     // converted to use Sqlite-Net
-    public VectorTilesSource(IMvtTileDataSource dataSource)
+    public VectorTilesSource(ITileDataSource dataSource)
     {
         sharedDataSource = dataSource ?? throw new ArgumentNullException(nameof(dataSource));
 
@@ -43,7 +44,7 @@ public class VectorTilesSource : IVectorTileSource
     {
         try
         {
-            foreach (var item in sharedDataSource.GetMetaData())
+            foreach (IMetaData item in sharedDataSource.GetMetaData())
             {
                 string name = item.Name;
                 switch (name.ToLower())
@@ -113,8 +114,8 @@ public class VectorTilesSource : IVectorTileSource
 
     public async Task<VectorTile?> GetVectorTileAsync(int x, int y, int zoom)
     {
-        var extent = new Rect(0, 0, 1, 1);
-        bool overZoomed = false;
+        Rect extent = new (0, 0, 1, 1);
+        var overZoomed = false;
 
         if (zoom > MaxZoom)
         {
@@ -172,21 +173,18 @@ public class VectorTilesSource : IVectorTileSource
 
         try
         {
-            var actualTile = await GetCachedVectorTileAsync(x, y, zoom);
-
-            if (actualTile != null)
+            if (await GetCachedVectorTileAsync(x, y, zoom) is {} cachedTile)
             {
-                actualTile.IsOverZoomed = overZoomed;
-                actualTile = actualTile.ApplyExtent(extent);
+                cachedTile.IsOverZoomed = overZoomed;
+                return cachedTile.ApplyExtent(extent);
             }
-
-            return actualTile;
         }
         catch (Exception e)
         {
             Log.Error(e);
-            return null;
         }
+
+        return null;
     }
 
     private readonly object keyLocker = new();

@@ -10,10 +10,10 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 public class TileRenderer : ITileRenderer
 {
     private readonly VectorStyle style;
-    private readonly IMvtTileDataSource connection;
+    private readonly ITileDataSource connection;
 
     public TileRenderer(
-        IMvtTileDataSource connection,
+        ITileDataSource connection,
         VectorStyleKind styleKind,
         string customStyle = null,
         string styleProviderString = "openmaptiles")

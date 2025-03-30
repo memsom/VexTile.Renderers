@@ -1,4 +1,4 @@
-namespace VexTile.Common.Tables;
+namespace VexTile.Common.Data;
 
 public interface IMetaData
 {
