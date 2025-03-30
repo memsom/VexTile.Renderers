@@ -49,9 +49,14 @@ public class MvtVectorTileSource : ITileSource
     ///  from the tiles table. The default is false.</param>
     ///  <param name="styleKind">The style to use for the rendering</param>
     ///  <param name="styleProviderName">the name of the style's provider name</param>
-    public MvtVectorTileSource(SQLiteConnectionString connectionString, ITileSchema? schema = null, MbTilesType type = MbTilesType.None,
-        bool determineZoomLevelsFromTilesTable = false, bool determineTileRangeFromTilesTable = false, 
-        VectorStyleKind styleKind = VectorStyleKind.Default, string styleProviderName = "openstreetmap")
+    public MvtVectorTileSource(
+        SQLiteConnectionString connectionString,
+        ITileSchema? schema = null,
+        MbTilesType type = MbTilesType.None,
+        bool determineZoomLevelsFromTilesTable = false,
+        bool determineTileRangeFromTilesTable = false,
+        VectorStyleKind styleKind = VectorStyleKind.Default,
+        string styleProviderName = "openmaptiles")
     {
         if (!File.Exists(connectionString.DatabasePath))
             throw new FileNotFoundException($"The mbtiles file does not exist: '{connectionString.DatabasePath}'", connectionString.DatabasePath);
