@@ -10,7 +10,7 @@ namespace VexTile.VectorTileReaders.Benchmarks
     [MemoryDiagnoser]
     public class Benchmarks
     {
-        readonly string _path = "..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
+        readonly string _path = "..\\..\\..\\..\\..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
 
         IVectorTileReader? _tileReader;
         Tile _tile = new Tile(8580, 10645, 14);
