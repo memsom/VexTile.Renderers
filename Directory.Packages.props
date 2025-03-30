@@ -4,6 +4,7 @@
     <CentralPackageTransitivePinningEnabled>false</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="BruTile" Version="5.0.6" />
     <PackageVersion Include="BruTile.MbTiles" Version="5.0.6" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
