@@ -35,10 +35,10 @@ public class MBTilesDataSource : IDataSource
     ///  from the tiles table. The default is false.</param>
     ///  <param name="styleKind">The style to use for the rendering</param>
     ///  <param name="styleProviderName">the name of the style's provider name</param>
-    public MBTilesDataSource(SQLiteConnectionString connectionString, 
-        ITileSchema? schema = null, 
+    public MBTilesDataSource(SQLiteConnectionString connectionString,
+        ITileSchema? schema = null,
         MbTilesType type = MbTilesType.None,
-        bool determineZoomLevelsFromTilesTable = false, 
+        bool determineZoomLevelsFromTilesTable = false,
         bool determineTileRangeFromTilesTable = false)
     {
         if (!File.Exists(connectionString.DatabasePath))
@@ -63,6 +63,15 @@ public class MBTilesDataSource : IDataSource
             var zoomLevelsFromDatabase = Schema.Resolutions.Select(r => r.Key);
             _tileRange = ReadTileRangeForEachLevelFromTilesTable(connection, zoomLevelsFromDatabase);
         }
+    }
+
+    public MBTilesDataSource(string path,
+        ITileSchema? schema = null,
+        MbTilesType type = MbTilesType.None,
+        bool determineZoomLevelsFromTilesTable = false,
+        bool determineTileRangeFromTilesTable = false) 
+        : this(new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false), schema, type, determineZoomLevelsFromTilesTable, determineTileRangeFromTilesTable)
+    {
     }
 
     /// <summary>
