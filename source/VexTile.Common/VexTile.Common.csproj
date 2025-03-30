@@ -19,8 +19,4 @@
         <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
         <None Include="..\..\images\logo-small.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="sqlite-net-pcl"/>
-    </ItemGroup>
 </Project>

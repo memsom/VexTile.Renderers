@@ -1,9 +1,10 @@
 ﻿using SQLite;
+using VexTile.Common.Data;
 
-namespace VexTile.Common.Tables;
+namespace VexTile.Data.Tables;
 
 [Table("tiles")]
-public class Tiles
+internal class Tile : ITile
 {
     [Column("tile_column")]
     public int X { get; set; }

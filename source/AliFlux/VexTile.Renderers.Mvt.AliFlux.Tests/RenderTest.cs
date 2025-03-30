@@ -1,6 +1,6 @@
 using SQLite;
-using VexTile.Common;
 using VexTile.Common.Enums;
+using VexTile.Data.Sources;
 using VexTile.Renderer.Mvt.AliFlux;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
 
@@ -18,11 +18,13 @@ public class RenderTest
         var style = new VectorStyle(VectorStyleKind.Default);
 
         string path = "zurich.mbtiles";
+        Assert.True(File.Exists(path));
 
-        SQLiteConnectionString val = new SQLiteConnectionString(path, (SQLiteOpenFlags)1, false);
-        var provider = new VectorTilesSource(new SQLiteConnection(val));
+        SQLiteConnectionString val = new(path, SQLiteOpenFlags.ReadOnly, false);
+        var dataSource = new SqliteDataSource(val);
+        var provider = new VectorTilesSource(dataSource);
         style.SetSourceProvider("openmaptiles", provider);
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, 0, 0, 0);
+        var tile = await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0, 0, 0));
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
@@ -46,12 +48,13 @@ public class RenderTest
         var style = new VectorStyle(VectorStyleKind.Default);
 
         string path = "newyork-mapbox.pbf";
+        Assert.True(File.Exists(path));
 
         var bytes = await File.ReadAllBytesAsync(path);
 
         var provider = new PbfTileSource(bytes);
         style.SetSourceProvider("openmaptiles", provider);
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, 0, 0, 0);
+        var tile = await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0));
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
@@ -74,10 +77,12 @@ public class RenderTest
         var canvas = new SkiaCanvas();
 
         string path = "zurich.mbtiles";
+        Assert.True(File.Exists(path));
 
-        var renderer = new TileRenderer(path, VectorStyleKind.Default);
+        var dataSource = new SqliteDataSource(path);
+        var renderer = new TileRenderer(dataSource, VectorStyleKind.Default);
 
-        var tile = await renderer.RenderTileAsync(canvas, 0, 0, 0);
+        var tile = await renderer.RenderTileAsync(canvas, new (0, 0, 0));
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);

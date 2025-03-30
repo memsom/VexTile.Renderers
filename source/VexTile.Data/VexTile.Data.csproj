@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>Latest</LangVersion>
+        <RootNamespace>VexTile.Data</RootNamespace>
+        <Title>VexTile Data</Title>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Description>Data access code for VexTile Renderers</Description>
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>VexTile.Data</PackageId>
+        <PackageIcon>logo-small.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+        <None Include="..\..\images\logo-small.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NLog" />
+        <PackageReference Include="sqlite-net-pcl"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\VexTile.Common\VexTile.Common.csproj"/>
+    </ItemGroup>
+
+    <PropertyGroup>
+        <ErrorReport>prompt</ErrorReport>
+        <!--
+            NETSDK1206 : Found version-specific or distribution-specific runtime identifier
+        -->
+        <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
+    </PropertyGroup>
+</Project>

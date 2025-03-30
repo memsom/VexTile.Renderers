@@ -10,7 +10,7 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 
 public static class VectorStyleReader
 {
-    static readonly NLog.Logger log  = NLog.LogManager.GetCurrentClassLogger();
+    private static readonly NLog.Logger Log  = NLog.LogManager.GetCurrentClassLogger();
 
     private static string[] names;
 
@@ -61,7 +61,7 @@ public static class VectorStyleReader
         }
         catch (Exception ex)
         {
-            log.Error(ex);
+            Log.Error(ex);
         }
 
         stream = null;

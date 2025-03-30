@@ -183,7 +183,6 @@
         <EmbeddedResource Include="Styles\fonts\Roboto-Thin.ttf"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="sqlite-net-pcl"/>
         <PackageReference Include="Newtonsoft.Json"/>
         <PackageReference Include="NLog"/>
         <PackageReference Include="SkiaSharp"/>
