@@ -4,7 +4,7 @@ using VexTile.Common.Sources;
 
 namespace VexTile.Reader.Mapbox;
 
-public class MapboxTileReader : IVectorTileReader
+public class MapboxTileReader : IVectorTileConverter
 {
     private NetTopologySuite.IO.VectorTiles.Mapbox.MapboxTileReader _tileReader;
     private IDataSource _dataSource;

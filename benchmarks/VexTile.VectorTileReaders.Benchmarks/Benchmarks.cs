@@ -11,7 +11,7 @@ namespace VexTile.VectorTileReaders.Benchmarks
     {
         readonly string _path = "..\\..\\..\\..\\..\\..\\..\\..\\..\\tiles\\zurich.mbtiles";
 
-        IVectorTileReader? _tileReader;
+        IVectorTileConverter? _tileReader;
         List<Tile> _tiles = new List<Tile> { new Tile(134, 166, 8), new Tile(8580, 10645, 14), new Tile(8581, 10645, 14), new Tile(8580, 10644, 14) };
         List<byte[]?> _data = new List<byte[]?>();
 
