@@ -10,7 +10,7 @@ public class MBTilesFolderDataSource : IDataSource
         Path = path;
     }
 
-    public string Path { get; init; } = "";
+    public string Path { get; }
 
     public async Task<byte[]?> GetTileAsync(Tile tile)
     {
@@ -22,6 +22,10 @@ public class MBTilesFolderDataSource : IDataSource
         if (!File.Exists(qualifiedPath))
             return null;
 
-        return await File.ReadAllBytesAsync(qualifiedPath);
+        byte[]? result = null;
+
+        await new Task(() => new Task(() => File.ReadAllBytes(qualifiedPath)).RunSynchronously());
+
+        return result;
     }
 }
