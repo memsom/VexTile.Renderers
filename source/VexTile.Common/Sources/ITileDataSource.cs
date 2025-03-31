@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using VexTile.Common.Data;
 
 namespace VexTile.Common.Sources;

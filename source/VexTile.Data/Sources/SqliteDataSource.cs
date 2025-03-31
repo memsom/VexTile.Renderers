@@ -1,4 +1,6 @@
-﻿using NLog;
+﻿using System;
+using System.Collections.Generic;
+using NLog;
 using SQLite;
 using VexTile.Common.Data;
 using VexTile.Common.Sources;
