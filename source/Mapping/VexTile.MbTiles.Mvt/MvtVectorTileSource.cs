@@ -1,13 +1,16 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using BruTile;
 using BruTile.MbTiles;
 using BruTile.Predefined;
 using SQLite;
 using VexTile.Common.Enums;
-using VexTile.Data;
 using VexTile.Data.Sources;
 using VexTile.Renderer.Mvt.AliFlux;
-using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
 using TileInfo = BruTile.TileInfo;
 
