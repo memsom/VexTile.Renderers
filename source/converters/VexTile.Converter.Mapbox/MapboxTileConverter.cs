@@ -2,20 +2,20 @@
 using System.IO.Compression;
 using VexTile.Common.Sources;
 
-namespace VexTile.Reader.Mapbox;
+namespace VexTile.Converter.Mapbox;
 
-public class MapboxTileReader : IVectorTileConverter
+public class MapboxTileConverter : IVectorTileConverter
 {
-    private NetTopologySuite.IO.VectorTiles.Mapbox.MapboxTileReader _tileReader;
+    private NetTopologySuite.IO.VectorTiles.Mapbox.MapboxTileReader _tileConverter;
     private IDataSource _dataSource;
 
-    public MapboxTileReader(IDataSource dataSource)
+    public MapboxTileConverter(IDataSource dataSource)
     {
         _dataSource = dataSource;
-        _tileReader = new NetTopologySuite.IO.VectorTiles.Mapbox.MapboxTileReader();
+        _tileConverter = new NetTopologySuite.IO.VectorTiles.Mapbox.MapboxTileReader();
     }
 
-    public async Task<VectorTile?> ReadVectorTile(NetTopologySuite.IO.VectorTiles.Tiles.Tile tile, byte[]? data = null)
+    public async Task<VectorTile?> ConvertToVectorTile(NetTopologySuite.IO.VectorTiles.Tiles.Tile tile, byte[]? data = null)
     {
         if (_dataSource == null)
             return new VectorTile();
@@ -33,7 +33,7 @@ public class MapboxTileReader : IVectorTileConverter
         if (IsGZipped(data))
             stream = new GZipStream(stream, CompressionMode.Decompress);
 
-        return _tileReader.Read(stream, tile);
+        return _tileConverter.Read(stream, tile);
     }
 
     private static bool IsGZipped(byte[] data)
@@ -50,6 +50,4 @@ public class MapboxTileReader : IVectorTileConverter
         string actualSignature = BitConverter.ToString(signature);
         return actualSignature == expectedSignature;
     }
-
-
 }

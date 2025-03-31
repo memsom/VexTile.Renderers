@@ -3,7 +3,7 @@ using NetTopologySuite.IO.VectorTiles.Tiles;
 
 namespace VexTile.Common.Sources;
 
-public interface IVectorTileReader
+public interface IVectorTileConverter
 {
-    Task<VectorTile?> ReadVectorTile(Tile tile, byte[]? data = null);
+    Task<VectorTile?> ConvertToVectorTile(Tile tile, byte[]? data = null);
 }
