@@ -13,7 +13,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         var connectionString = new SQLiteConnectionString("zurich.mbtiles", SQLiteOpenFlags.ReadOnly, false);
-        var source = new MvtVectorTileSource(connectionString, whitelist: ["landcover"]);
+        var source = new MvtVectorTileSource(connectionString, whitelist: ["water"]);
         var tileLayer = new TileLayer(source);
         TheMap.Map.Layers.Add(tileLayer);
     }

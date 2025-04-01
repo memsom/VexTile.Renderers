@@ -7,6 +7,7 @@ using SkiaSharp;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
+using Point = VexTile.Renderer.Mvt.AliFlux.Drawing.Point;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
 
@@ -30,7 +31,7 @@ public static class TileRendererFactory
     /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
     /// <returns>a png</returns>
     public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null, Color? overrideBackground = null) =>
-        await  RenderAsync(style, canvas,
+        await RenderAsync(style, canvas,
             new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers), overrideBackground);
 
     /// <summary>
@@ -174,10 +175,11 @@ public static class TileRendererFactory
                 var brushes = style.GetStyleByType("background", actualZoom, tileData.Scale);
                 foreach (var brush in brushes)
                 {
-                    if (overrideBackground is {} c)
+                    if (overrideBackground is { } c)
                     {
                         brush.Paint.BackgroundColor = new SKColor(c.R, c.G, c.B, c.A);
                     }
+
                     canvas.DrawBackground(brush);
                 }
             }

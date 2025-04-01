@@ -217,9 +217,7 @@ public class MvtVectorTileSource : ITileSource
                     _style,
                     canvas,
                     tileInfo.Index.Col, tileInfo.Index.Row, Convert.ToInt32(tileInfo.Index.Level),
-                    256, 256, 1,
-                    null, //whitelist,
-                    Color.Red);
+                    256, 256, 1);
             }
             catch(Exception ex)
             {

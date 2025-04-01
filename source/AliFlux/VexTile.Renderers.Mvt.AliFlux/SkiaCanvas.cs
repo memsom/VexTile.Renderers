@@ -16,7 +16,7 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 
 public class SkiaCanvas : ICanvas
 {
-    readonly NLog.Logger log =  NLog.LogManager.GetCurrentClassLogger();
+    readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
     private int _width;
     private int _height;
@@ -53,8 +53,7 @@ public class SkiaCanvas : ICanvas
         };
     }
 
-    public void DrawBackground(Brush style) =>
-        _canvas.Clear(SKColorFactory.MakeColor(style.Paint.BackgroundColor.Red, style.Paint.BackgroundColor.Green, style.Paint.BackgroundColor.Blue, style.Paint.BackgroundColor.Alpha));
+    public void DrawBackground(Brush style) => _canvas.Clear(SKColorFactory.MakeColor(style.Paint.BackgroundColor.Red, style.Paint.BackgroundColor.Green, style.Paint.BackgroundColor.Blue, style.Paint.BackgroundColor.Alpha));
 
     private SKStrokeCap ConvertCap(PenLineCap cap)
     {
@@ -71,10 +70,7 @@ public class SkiaCanvas : ICanvas
         return SKStrokeCap.Square;
     }
 
-    private double Clamp(double number, double min = 0, double max = 1)
-    {
-        return Math.Max(min, Math.Min(max, number));
-    }
+    private double Clamp(double number, double min = 0, double max = 1) { return Math.Max(min, Math.Min(max, number)); }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1168:Empty arrays and collections should be returned instead of null", Justification = "<Pending>")]
     private List<List<Point>> ClipPolygon(List<Point> geometry) // may break polygons into multiple ones
@@ -456,13 +452,9 @@ public class SkiaCanvas : ICanvas
         return distance;
     }
 
-    private Vector Subtract(Point point1, Point point2)
-    {
-        return new Vector(point1.X - point2.X, point1.Y - point2.Y);
-    }
+    private Vector Subtract(Point point1, Point point2) { return new Vector(point1.X - point2.X, point1.Y - point2.Y); }
 
-    private double GetAbsoluteDiff2Angles(double x, double y, double c = Math.PI) =>
-        c - Math.Abs((Math.Abs(x - y) % 2 * c) - c);
+    private double GetAbsoluteDiff2Angles(double x, double y, double c = Math.PI) => c - Math.Abs((Math.Abs(x - y) % 2 * c) - c);
 
     private bool CheckPathSqueezing(List<Point> path, double textHeight)
     {
@@ -563,8 +555,8 @@ public class SkiaCanvas : ICanvas
         {
             //  implement this func custom way...
             _canvas.DrawTextOnPath(text, path, offset, true, GetTextStrokePaint(style));
-
         }
+
         _canvas.DrawTextOnPath(text, path, offset, true, GetTextPaint(style));
     }
 
@@ -604,7 +596,10 @@ public class SkiaCanvas : ICanvas
                 return;
             }
 
-            var tcolor = style.Paint.FillColor;
+
+            var tcolor = !IsClockwise(geometry)
+                ? style.Paint.FillColor
+                : SKColors.Azure;
 
             var color = SKColorFactory.MakeColor(tcolor.Red, tcolor.Green, tcolor.Blue, (byte)Clamp(tcolor.Alpha * style.Paint.FillOpacity, 0, 255));
 
@@ -618,6 +613,19 @@ public class SkiaCanvas : ICanvas
 
             _canvas.DrawPath(path, fillPaint);
         }
+    }
+
+    private static bool IsClockwise(List<Point> polygon)
+    {
+        double sum = 0.0;
+        for (int i = 0; i < polygon.Count; i++)
+        {
+            Point v1 = polygon[i];
+            Point v2 = polygon[(i + 1) % polygon.Count];
+            sum += (v2.X - v1.X) * (v2.Y + v1.Y);
+        }
+
+        return sum > 0.0;
     }
 
     public void DrawImage(byte[] imageData, Brush style)
@@ -634,19 +642,17 @@ public class SkiaCanvas : ICanvas
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1186:Methods should not be empty", Justification = "Third party")]
-    public void DrawUnknown(List<List<Point>> geometry, Brush style)
-    {
-    }
+    public void DrawUnknown(List<List<Point>> geometry, Brush style) { }
 
     public void DrawDebugBox(TileInfo tileData, SKColor color)
     {
-        _surface.Canvas.DrawRect(new SKRect(0,0,_width,_height), new SKPaint
+        _surface.Canvas.DrawRect(new SKRect(0, 0, _width, _height), new SKPaint
         {
             Color = color,
             Style = SKPaintStyle.Stroke,
         });
 
-        _surface.Canvas.DrawText($"({tileData.X}, {tileData.Y}, {(int)tileData.Zoom})", new SKPoint(20,20), new SKPaint
+        _surface.Canvas.DrawText($"({tileData.X}, {tileData.Y}, {(int)tileData.Zoom})", new SKPoint(20, 20), new SKPaint
         {
             FakeBoldText = true,
             TextSize = 14,
