@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿#define DEBUG_EXTENT
+
+using System.Drawing;
 using BruTile;
 using BruTile.MbTiles;
 using BruTile.Predefined;
@@ -29,6 +26,7 @@ public class MvtVectorTileSource : ITileSource
     public string Compression { get; }
 
     private readonly SQLiteConnectionString _connectionString;
+    private readonly List<string>? whitelist;
     private readonly Dictionary<int, TileRange>? _tileRange;
 
     private readonly VectorStyle _style;
@@ -52,6 +50,7 @@ public class MvtVectorTileSource : ITileSource
     ///  from the tiles table. The default is false.</param>
     ///  <param name="styleKind">The style to use for the rendering</param>
     ///  <param name="styleProviderName">the name of the style's provider name</param>
+    ///  <param name="whitelist"></param>
     public MvtVectorTileSource(
         SQLiteConnectionString connectionString,
         ITileSchema? schema = null,
@@ -59,12 +58,14 @@ public class MvtVectorTileSource : ITileSource
         bool determineZoomLevelsFromTilesTable = false,
         bool determineTileRangeFromTilesTable = false,
         VectorStyleKind styleKind = VectorStyleKind.Default,
-        string styleProviderName = "openmaptiles")
+        string styleProviderName = "openmaptiles",
+        List<string>? whitelist = null)
     {
         if (!File.Exists(connectionString.DatabasePath))
             throw new FileNotFoundException($"The mbtiles file does not exist: '{connectionString.DatabasePath}'", connectionString.DatabasePath);
 
         _connectionString = connectionString;
+        this.whitelist = whitelist;
 
         using var connection = new SQLiteConnection(connectionString);
         Schema = schema ?? ReadSchemaFromDatabase(connection, determineZoomLevelsFromTilesTable);
@@ -149,6 +150,9 @@ public class MvtVectorTileSource : ITileSource
 
     private static Extent ReadExtent(SQLiteConnection connection)
     {
+#if DEBUG_EXTENT
+        return new Extent(-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789);
+#else
         const string sql = "SELECT \"value\" FROM metadata WHERE \"name\"=?;";
         try
         {
@@ -169,6 +173,7 @@ public class MvtVectorTileSource : ITileSource
         {
             return new Extent(-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789);
         }
+#endif
     }
 
     private static Extent ToMercator(Extent extent)
@@ -212,7 +217,9 @@ public class MvtVectorTileSource : ITileSource
                     _style,
                     canvas,
                     tileInfo.Index.Col, tileInfo.Index.Row, Convert.ToInt32(tileInfo.Index.Level),
-                    256, 256, 1);
+                    256, 256, 1,
+                    null, //whitelist,
+                    Color.Red);
             }
             catch(Exception ex)
             {

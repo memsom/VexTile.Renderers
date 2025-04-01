@@ -638,6 +638,23 @@ public class SkiaCanvas : ICanvas
     {
     }
 
+    public void DrawDebugBox(TileInfo tileData, SKColor color)
+    {
+        _surface.Canvas.DrawRect(new SKRect(0,0,_width,_height), new SKPaint
+        {
+            Color = color,
+            Style = SKPaintStyle.Stroke,
+        });
+
+        _surface.Canvas.DrawText($"({tileData.X}, {tileData.Y}, {(int)tileData.Zoom})", new SKPoint(20,20), new SKPaint
+        {
+            FakeBoldText = true,
+            TextSize = 14,
+            Color = color,
+            Style = SKPaintStyle.Stroke,
+        });
+    }
+
     public byte[] FinishDrawing()
     {
         using var image = _surface.Snapshot();

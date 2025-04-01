@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using SkiaSharp;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
@@ -27,9 +29,9 @@ public static class TileRendererFactory
     /// <param name="scale">optional scale, defaults to 1</param>
     /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
     /// <returns>a png</returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null) =>
+    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null, Color? overrideBackground = null) =>
         await  RenderAsync(style, canvas,
-            new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers));
+            new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers), overrideBackground);
 
     /// <summary>
     /// This is basically to avoid a lot of boilerplate
@@ -38,7 +40,7 @@ public static class TileRendererFactory
     /// <param name="canvas">the canvas to draw on</param>
     /// <param name="tileData">contains all the tile information</param>
     /// <returns>a png</returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData)
+    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData, Color? overrideBackground = null)
     {
         Dictionary<Source, VectorTile> vectorTileCache = new();
         Dictionary<string, List<VectorTileLayer>> categorizedVectorLayers = new();
@@ -172,15 +174,19 @@ public static class TileRendererFactory
                 var brushes = style.GetStyleByType("background", actualZoom, tileData.Scale);
                 foreach (var brush in brushes)
                 {
+                    if (overrideBackground is {} c)
+                    {
+                        brush.Paint.BackgroundColor = new SKColor(c.R, c.G, c.B, c.A);
+                    }
                     canvas.DrawBackground(brush);
                 }
             }
         }
 
-        return RenderVisualLayers(canvas, visualLayers);
+        return RenderVisualLayers(canvas, visualLayers, tileData);
     }
 
-    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers)
+    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers, TileInfo tileData)
     {
         // defered rendering to preserve text drawing order
         foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
@@ -274,6 +280,8 @@ public static class TileRendererFactory
                 }
             }
         }
+
+        canvas.DrawDebugBox(tileData, SKColors.Black);
 
         return canvas.FinishDrawing();
     }

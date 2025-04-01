@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SkiaSharp;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
@@ -24,6 +25,8 @@ public interface ICanvas
     void DrawImage(byte[] imageData, Brush style);
 
     void DrawUnknown(List<List<Point>> geometry, Brush style);
+
+    void DrawDebugBox(TileInfo tileData, SKColor color);
 
     byte[] FinishDrawing();
 }
