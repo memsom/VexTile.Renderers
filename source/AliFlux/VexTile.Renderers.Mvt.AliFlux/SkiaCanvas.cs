@@ -103,7 +103,7 @@ public class SkiaCanvas : ICanvas
 
     private SKPath GetPathFromGeometry(List<Point> geometry)
     {
-        SKPath path = new SKPath
+        SKPath path = new()
         {
             FillType = SKPathFillType.EvenOdd,
         };
@@ -118,6 +118,22 @@ public class SkiaCanvas : ICanvas
         }
 
         return path;
+    }
+
+    private static bool IsLeftToRight(List<Point> geometry)
+    {
+        var firstPoint = geometry[0];
+        var lastPoint = geometry[geometry.Count - 1];
+
+        return  (firstPoint.X <= lastPoint.X);
+    }
+
+    private static bool IsTopToBottom(List<Point> geometry)
+    {
+        var firstPoint = geometry[0];
+        var lastPoint = geometry[geometry.Count - 1];
+
+        return  (firstPoint.Y > lastPoint.Y);
     }
 
     public void DrawLineString(List<Point> geometry, Brush style)
@@ -508,7 +524,23 @@ public class SkiaCanvas : ICanvas
             return;
         }
 
-        var path = GetPathFromGeometry(geometry);
+        // is the path | ----> | or | <---- | ?
+
+        var ltr = IsLeftToRight(geometry);
+        var ttb = IsTopToBottom(geometry);
+
+        SKPath path;
+        if (ltr)
+        {
+            path = GetPathFromGeometry(geometry);
+        }
+        else
+        {
+            var pathPoints = new List<Point>(geometry);
+            pathPoints.Reverse();
+            path = GetPathFromGeometry(pathPoints);
+        }
+
         string text = TransformText(style.Text, style);
 
         if (CheckPathSqueezing(geometry, style.Paint.TextSize))
@@ -558,6 +590,8 @@ public class SkiaCanvas : ICanvas
         }
 
         _canvas.DrawTextOnPath(text, path, offset, true, GetTextPaint(style));
+
+
     }
 
     public void DrawPoint(Point geometry, Brush style)
