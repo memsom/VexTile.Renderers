@@ -550,10 +550,12 @@ public class SkiaCanvas : ICanvas
 
         var bounds = path.Bounds;
 
-        double left = bounds.Left - style.Paint.TextSize;
-        double top = bounds.Top - style.Paint.TextSize;
-        double right = bounds.Right + style.Paint.TextSize;
-        double bottom = bounds.Bottom + style.Paint.TextSize;
+        double hedge = 2;
+
+        double left = bounds.Left - style.Paint.TextSize - hedge;
+        double top = bounds.Top - style.Paint.TextSize - hedge;
+        double right = bounds.Right + style.Paint.TextSize + hedge;
+        double bottom = bounds.Bottom + style.Paint.TextSize + hedge;
 
         var rectangle = new Rect(left, top, right - left, bottom - top);
 
