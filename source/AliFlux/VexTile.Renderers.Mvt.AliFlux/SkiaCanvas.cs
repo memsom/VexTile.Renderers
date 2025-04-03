@@ -53,7 +53,13 @@ public class SkiaCanvas : ICanvas
         };
     }
 
-    public void DrawBackground(Brush style) => _canvas.Clear(SKColorFactory.MakeColor(style.Paint.BackgroundColor.Red, style.Paint.BackgroundColor.Green, style.Paint.BackgroundColor.Blue, style.Paint.BackgroundColor.Alpha));
+    SKColor _backgroundColor = SKColors.White;
+
+    public void DrawBackground(Brush style)
+    {
+        _backgroundColor = style.Paint.BackgroundColor; // we cache this
+        _canvas.Clear(SKColorFactory.MakeColor(style.Paint.BackgroundColor.Red, style.Paint.BackgroundColor.Green, style.Paint.BackgroundColor.Blue, style.Paint.BackgroundColor.Alpha));
+    }
 
     private SKStrokeCap ConvertCap(PenLineCap cap)
     {
@@ -633,11 +639,14 @@ public class SkiaCanvas : ICanvas
             }
 
 
-            var tcolor = !IsClockwise(geometry)
-                ? style.Paint.FillColor
-                : SKColors.Azure;
 
-            var color = SKColorFactory.MakeColor(tcolor.Red, tcolor.Green, tcolor.Blue, (byte)Clamp(tcolor.Alpha * style.Paint.FillOpacity, 0, 255));
+            var color = !IsClockwise(geometry)
+                ? SKColorFactory.MakeColor(
+                    style.Paint.FillColor.Red,
+                    style.Paint.FillColor.Green,
+                    style.Paint.FillColor.Blue,
+                    (byte)Clamp(style.Paint.FillColor.Alpha * style.Paint.FillOpacity, 0, 255))
+                : _backgroundColor;
 
             SKPaint fillPaint = new SKPaint
             {

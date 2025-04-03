@@ -4,6 +4,7 @@
         <Configurations>Debug;Release</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>disable</Nullable>
+        <Copyright>Copyright (c) 2018 Ali Ashraf, 2019-2025 Matt Emson</Copyright>
         <Title>VexTile AliFlux Mapbox Vector Tile Renderer</Title>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <Description>A comprehensive Mapbox Vector Tile Renderer for .Net/C#, based on the AliFlux.VectorTileRenderer</Description>

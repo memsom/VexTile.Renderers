@@ -106,7 +106,7 @@ public class RenderTest
 
 
     [Fact]
-    public async Task AAABasicFactoryRenderTest()
+    public async Task BasicFactoryRenderTest_WaterOnly()
     {
         var canvas = new SkiaCanvas();
         var style = new VectorStyle(VectorStyleKind.Default);
@@ -129,11 +129,11 @@ public class RenderTest
 
         Assert.True(IsPng(tile));
 
-        if (File.Exists("aaa.png"))
+        if (File.Exists("wateronly.png"))
         {
-            File.Delete("aaa.png");
+            File.Delete("wateronly.png");
         }
 
-        await File.WriteAllBytesAsync("aaa.png", tile);
+        await File.WriteAllBytesAsync("wateronly.png", tile);
     }
 }
