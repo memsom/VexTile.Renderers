@@ -1,6 +1,7 @@
-﻿#define DEBUG_EXTENT
+﻿//Define this to make the extent the entire world, rather than just the included tiles.
+//#define DEBUG_EXTENT
 
-using System.Drawing;
+using System.Globalization;
 using BruTile;
 using BruTile.MbTiles;
 using BruTile.Predefined;

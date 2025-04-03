@@ -1,4 +1,8 @@
-﻿using System;
+﻿// defining this will add a box around the tile boundary and also
+// burn in the XYZ value of the tile. This is very handy for debugging
+//#define USE_DEBUG_BOX
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -283,7 +287,9 @@ public static class TileRendererFactory
             }
         }
 
+#if USE_DEBUG_BOX
         canvas.DrawDebugBox(tileData, SKColors.Black);
+#endif
 
         return canvas.FinishDrawing();
     }
