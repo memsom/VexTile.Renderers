@@ -16,8 +16,6 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 
 public class SkiaCanvas : ICanvas
 {
-    readonly NLog.Logger log =  NLog.LogManager.GetCurrentClassLogger();
-
     private int _width;
     private int _height;
 
@@ -28,7 +26,7 @@ public class SkiaCanvas : ICanvas
     private Rect _clipRectangle;
     private List<IntPoint> _clipRectanglePath;
     private readonly ConcurrentDictionary<string, SKTypeface> _fontPairs = new();
-    private static readonly object s_fontLock = new();
+    private static readonly object SFontLock = new();
     private readonly List<Rect> _textRectangles = new();
 
     public void StartDrawing(double width, double height)
@@ -44,17 +42,23 @@ public class SkiaCanvas : ICanvas
         double padding = -5;
         _clipRectangle = new Rect(padding, padding, _width - padding * 2, _height - padding * 2);
 
-        _clipRectanglePath = new List<IntPoint>
-        {
+        _clipRectanglePath =
+        [
             new((int)_clipRectangle.Top, (int)_clipRectangle.Left),
             new((int)_clipRectangle.Top, (int)_clipRectangle.Right),
             new((int)_clipRectangle.Bottom, (int)_clipRectangle.Right),
             new((int)_clipRectangle.Bottom, (int)_clipRectangle.Left)
-        };
+        ];
     }
 
-    public void DrawBackground(Brush style) =>
-        _canvas.Clear(SKColorFactory.MakeColor(style.Paint.BackgroundColor.Red, style.Paint.BackgroundColor.Green, style.Paint.BackgroundColor.Blue, style.Paint.BackgroundColor.Alpha));
+    // this is captured to be used when we draw any polygons that require background color
+    public SKColor BackgroundColor { get; private set; }= SKColors.White;
+
+    public void DrawBackground(SKColor color)
+    {
+        BackgroundColor = color; // we cache this
+        _canvas.Clear(SKColorFactory.MakeColor(color.Red,color.Green, color.Blue, color.Alpha));
+    }
 
     private SKStrokeCap ConvertCap(PenLineCap cap)
     {
@@ -71,12 +75,8 @@ public class SkiaCanvas : ICanvas
         return SKStrokeCap.Square;
     }
 
-    private double Clamp(double number, double min = 0, double max = 1)
-    {
-        return Math.Max(min, Math.Min(max, number));
-    }
+    private double Clamp(double number, double min = 0, double max = 1) => Math.Max(min, Math.Min(max, number));
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1168:Empty arrays and collections should be returned instead of null", Justification = "<Pending>")]
     private List<List<Point>> ClipPolygon(List<Point> geometry) // may break polygons into multiple ones
     {
         var c = new Clipper();
@@ -107,7 +107,7 @@ public class SkiaCanvas : ICanvas
 
     private SKPath GetPathFromGeometry(List<Point> geometry)
     {
-        SKPath path = new SKPath
+        SKPath path = new()
         {
             FillType = SKPathFillType.EvenOdd,
         };
@@ -122,6 +122,22 @@ public class SkiaCanvas : ICanvas
         }
 
         return path;
+    }
+
+    private static bool IsLeftToRight(List<Point> geometry)
+    {
+        var firstPoint = geometry[0];
+        var lastPoint = geometry[geometry.Count - 1];
+
+        return (firstPoint.X <= lastPoint.X);
+    }
+
+    private static bool IsTopToBottom(List<Point> geometry)
+    {
+        var firstPoint = geometry[0];
+        var lastPoint = geometry[geometry.Count - 1];
+
+        return (firstPoint.Y > lastPoint.Y);
     }
 
     public void DrawLineString(List<Point> geometry, Brush style)
@@ -143,7 +159,7 @@ public class SkiaCanvas : ICanvas
 
         var color = style.Paint.LineColor;
 
-        SKPaint fillPaint = new SKPaint
+        SKPaint fillPaint = new()
         {
             Style = SKPaintStyle.Stroke,
             StrokeCap = ConvertCap(style.Paint.LineCap),
@@ -240,7 +256,6 @@ public class SkiaCanvas : ICanvas
         return text;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "<Pending>")]
     private string BreakText(string input, SKPaint paint, Brush style)
     {
         string restOfText = input;
@@ -287,7 +302,7 @@ public class SkiaCanvas : ICanvas
 
     private SKTypeface GetFont(string[] familyNames, Brush style)
     {
-        lock (s_fontLock)
+        lock (SFontLock)
         {
             foreach (string name in familyNames)
             {
@@ -456,13 +471,9 @@ public class SkiaCanvas : ICanvas
         return distance;
     }
 
-    private Vector Subtract(Point point1, Point point2)
-    {
-        return new Vector(point1.X - point2.X, point1.Y - point2.Y);
-    }
+    private Vector Subtract(Point point1, Point point2) => new(point1.X - point2.X, point1.Y - point2.Y);
 
-    private double GetAbsoluteDiff2Angles(double x, double y, double c = Math.PI) =>
-        c - Math.Abs((Math.Abs(x - y) % 2 * c) - c);
+    private double GetAbsoluteDiff2Angles(double x, double y, double c = Math.PI) => c - Math.Abs((Math.Abs(x - y) % 2 * c) - c);
 
     private bool CheckPathSqueezing(List<Point> path, double textHeight)
     {
@@ -516,7 +527,21 @@ public class SkiaCanvas : ICanvas
             return;
         }
 
-        var path = GetPathFromGeometry(geometry);
+        // is the path | ----> | or | <---- | ?
+        var ltr = IsLeftToRight(geometry);
+
+        SKPath path;
+        if (ltr)
+        {
+            path = GetPathFromGeometry(geometry);
+        }
+        else
+        {
+            var pathPoints = new List<Point>(geometry);
+            pathPoints.Reverse();
+            path = GetPathFromGeometry(pathPoints);
+        }
+
         string text = TransformText(style.Text, style);
 
         if (CheckPathSqueezing(geometry, style.Paint.TextSize))
@@ -526,10 +551,12 @@ public class SkiaCanvas : ICanvas
 
         var bounds = path.Bounds;
 
-        double left = bounds.Left - style.Paint.TextSize;
-        double top = bounds.Top - style.Paint.TextSize;
-        double right = bounds.Right + style.Paint.TextSize;
-        double bottom = bounds.Bottom + style.Paint.TextSize;
+        double hedge = 2;
+
+        double left = bounds.Left - style.Paint.TextSize - hedge;
+        double top = bounds.Top - style.Paint.TextSize - hedge;
+        double right = bounds.Right + style.Paint.TextSize + hedge;
+        double bottom = bounds.Bottom + style.Paint.TextSize + hedge;
 
         var rectangle = new Rect(left, top, right - left, bottom - top);
 
@@ -563,8 +590,8 @@ public class SkiaCanvas : ICanvas
         {
             //  implement this func custom way...
             _canvas.DrawTextOnPath(text, path, offset, true, GetTextStrokePaint(style));
-
         }
+
         _canvas.DrawTextOnPath(text, path, offset, true, GetTextPaint(style));
     }
 
@@ -576,7 +603,7 @@ public class SkiaCanvas : ICanvas
         }
     }
 
-    public void DrawPolygon(List<Point> geometry, Brush style)
+    public void DrawPolygon(List<Point> geometry, Brush style, SKColor? background = null)
     {
         List<List<Point>> allGeometries;
         if (ClipOverflow)
@@ -604,11 +631,16 @@ public class SkiaCanvas : ICanvas
                 return;
             }
 
-            var tcolor = style.Paint.FillColor;
+            // only override when background is actually set
+            var color = background is null || !IsClockwise(geometry)
+                ? SKColorFactory.MakeColor(
+                    style.Paint.FillColor.Red,
+                    style.Paint.FillColor.Green,
+                    style.Paint.FillColor.Blue,
+                    (byte)Clamp(style.Paint.FillColor.Alpha * style.Paint.FillOpacity, 0, 255))
+                : background.Value;
 
-            var color = SKColorFactory.MakeColor(tcolor.Red, tcolor.Green, tcolor.Blue, (byte)Clamp(tcolor.Alpha * style.Paint.FillOpacity, 0, 255));
-
-            SKPaint fillPaint = new SKPaint
+            SKPaint fillPaint = new()
             {
                 Style = SKPaintStyle.Fill,
                 StrokeCap = ConvertCap(style.Paint.LineCap),
@@ -618,6 +650,19 @@ public class SkiaCanvas : ICanvas
 
             _canvas.DrawPath(path, fillPaint);
         }
+    }
+
+    private static bool IsClockwise(List<Point> polygon)
+    {
+        double sum = 0.0;
+        for (int i = 0; i < polygon.Count; i++)
+        {
+            Point v1 = polygon[i];
+            Point v2 = polygon[(i + 1) % polygon.Count];
+            sum += (v2.X - v1.X) * (v2.Y + v1.Y);
+        }
+
+        return sum > 0.0;
     }
 
     public void DrawImage(byte[] imageData, Brush style)
@@ -634,8 +679,23 @@ public class SkiaCanvas : ICanvas
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S1186:Methods should not be empty", Justification = "Third party")]
-    public void DrawUnknown(List<List<Point>> geometry, Brush style)
+    public void DrawUnknown(List<List<Point>> geometry, Brush style) { }
+
+    public void DrawDebugBox(TileInfo tileData, SKColor color)
     {
+        _surface.Canvas.DrawRect(new SKRect(0, 0, _width, _height), new SKPaint
+        {
+            Color = color,
+            Style = SKPaintStyle.Stroke,
+        });
+
+        _surface.Canvas.DrawText($"({tileData.X}, {tileData.Y}, {(int)tileData.Zoom})", new SKPoint(20, 20), new SKPaint
+        {
+            FakeBoldText = true,
+            TextSize = 14,
+            Color = color,
+            Style = SKPaintStyle.Stroke,
+        });
     }
 
     public byte[] FinishDrawing()

@@ -1,7 +1,13 @@
-﻿using System;
+﻿// defining this will add a box around the tile boundary and also
+// burn in the XYZ value of the tile. This is very handy for debugging
+//#define USE_DEBUG_BOX
+
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using SkiaSharp;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
@@ -26,10 +32,11 @@ public static class TileRendererFactory
     /// <param name="sizeY">optional height size for the tile, defaults to 512</param>
     /// <param name="scale">optional scale, defaults to 1</param>
     /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
+    /// <param name="overrideBackground">override the default background color</param>
     /// <returns>a png</returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null) =>
-        await  RenderAsync(style, canvas,
-            new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers));
+    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null, Color? overrideBackground = null) =>
+        await RenderAsync(style, canvas,
+            new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers), overrideBackground);
 
     /// <summary>
     /// This is basically to avoid a lot of boilerplate
@@ -37,8 +44,9 @@ public static class TileRendererFactory
     /// <param name="style">the style to apply</param>
     /// <param name="canvas">the canvas to draw on</param>
     /// <param name="tileData">contains all the tile information</param>
+    /// <param name="overrideBackground">override the default background color</param>
     /// <returns>a png</returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData)
+    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData, Color? overrideBackground = null)
     {
         Dictionary<Source, VectorTile> vectorTileCache = new();
         Dictionary<string, List<VectorTileLayer>> categorizedVectorLayers = new();
@@ -160,7 +168,9 @@ public static class TileRendererFactory
                                     VectorTileFeature = feature,
                                     Geometry = feature.Geometry,
                                     Brush = brush,
-                                    Id = $"{layer.ID} :: {layer.SourceName} :: {layer.SourceLayer}"
+                                    LayerId = layer.ID,
+                                    SourceName = layer.SourceName,
+                                    SourceLayer = layer.SourceLayer,
                                 });
                             }
                         }
@@ -172,7 +182,12 @@ public static class TileRendererFactory
                 var brushes = style.GetStyleByType("background", actualZoom, tileData.Scale);
                 foreach (var brush in brushes)
                 {
-                    canvas.DrawBackground(brush);
+                    if (overrideBackground is { } c)
+                    {
+                        brush.Paint.BackgroundColor = new SKColor(c.R, c.G, c.B, c.A);
+                    }
+
+                    canvas.DrawBackground(brush.Paint.BackgroundColor);
                 }
             }
         }
@@ -216,7 +231,15 @@ public static class TileRendererFactory
                     {
                         foreach (var polygon in geometry)
                         {
-                            canvas.DrawPolygon(polygon, brush);
+                            //we know water is broken, so for now we are special casing it
+                            if(layer.SourceLayer == "water")
+                            {
+                                canvas.DrawPolygon(polygon, brush, canvas.BackgroundColor);
+                            }
+                            else
+                            {
+                                canvas.DrawPolygon(polygon, brush, null);
+                            }
                         }
                     }
                     else if (feature.GeometryType == "Unknown")
@@ -274,6 +297,10 @@ public static class TileRendererFactory
                 }
             }
         }
+
+#if USE_DEBUG_BOX
+        canvas.DrawDebugBox(tileData, SKColors.Black);
+#endif
 
         return canvas.FinishDrawing();
     }

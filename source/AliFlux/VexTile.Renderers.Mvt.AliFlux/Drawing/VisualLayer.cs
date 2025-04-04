@@ -15,5 +15,8 @@ public class VisualLayer
 
     public Brush Brush { get; set; }
 
-    public string Id { get; set; } = "";
+    public string Id => $"{LayerId} :: {SourceName} :: {SourceLayer}";
+    public string LayerId { get; set; }
+    public string SourceName { get; set; }
+    public string SourceLayer { get; set; }
 }

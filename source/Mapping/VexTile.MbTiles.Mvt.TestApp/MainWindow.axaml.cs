@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using BruTile.MbTiles;
 using Mapsui.Tiling.Layers;
 using SQLite;
 using VexTile.TileSource.Mvt;
@@ -12,7 +13,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         var connectionString = new SQLiteConnectionString("zurich.mbtiles", SQLiteOpenFlags.ReadOnly, false);
-        var source = new MvtVectorTileSource(connectionString);
+        var source = new MvtVectorTileSource(connectionString, determineExtent: false);
         var tileLayer = new TileLayer(source);
         TheMap.Map.Layers.Add(tileLayer);
     }

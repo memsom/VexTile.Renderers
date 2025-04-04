@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using BruTile;
 using BruTile.MbTiles;
 using BruTile.Predefined;
@@ -28,7 +23,7 @@ public class MvtVectorTileSource : ITileSource
     public string Json { get; }
     public string Compression { get; }
 
-    private readonly SQLiteConnectionString _connectionString;
+    private readonly List<string>? _whitelist;
     private readonly Dictionary<int, TileRange>? _tileRange;
 
     private readonly VectorStyle _style;
@@ -52,6 +47,8 @@ public class MvtVectorTileSource : ITileSource
     ///  from the tiles table. The default is false.</param>
     ///  <param name="styleKind">The style to use for the rendering</param>
     ///  <param name="styleProviderName">the name of the style's provider name</param>
+    ///  <param name="whitelist">white list of layers to render</param>
+    ///  <param name="determineExtent">when false, the extent is ignored and set to the world</param>
     public MvtVectorTileSource(
         SQLiteConnectionString connectionString,
         ITileSchema? schema = null,
@@ -59,15 +56,17 @@ public class MvtVectorTileSource : ITileSource
         bool determineZoomLevelsFromTilesTable = false,
         bool determineTileRangeFromTilesTable = false,
         VectorStyleKind styleKind = VectorStyleKind.Default,
-        string styleProviderName = "openmaptiles")
+        string styleProviderName = "openmaptiles",
+        List<string>? whitelist = null,
+        bool determineExtent = true)
     {
         if (!File.Exists(connectionString.DatabasePath))
             throw new FileNotFoundException($"The mbtiles file does not exist: '{connectionString.DatabasePath}'", connectionString.DatabasePath);
 
-        _connectionString = connectionString;
+        _whitelist = whitelist;
 
         using var connection = new SQLiteConnection(connectionString);
-        Schema = schema ?? ReadSchemaFromDatabase(connection, determineZoomLevelsFromTilesTable);
+        Schema = schema ?? ReadSchemaFromDatabase(connection, determineZoomLevelsFromTilesTable, determineExtent);
         Type = type == MbTilesType.None ? ReadType(connection) : type;
         Version = ReadString(connection, "version");
         Attribution = new Attribution(ReadString(connection, "attribution"));
@@ -89,14 +88,14 @@ public class MvtVectorTileSource : ITileSource
         _style.SetSourceProvider(styleProviderName, provider);
     }
 
-    private static ITileSchema ReadSchemaFromDatabase(SQLiteConnection connection, bool determineZoomLevelsFromTilesTable)
+    private static ITileSchema ReadSchemaFromDatabase(SQLiteConnection connection, bool determineZoomLevelsFromTilesTable, bool determineExtent)
     {
         // ReadZoomLevels can return null. This is no problem. GlobalSphericalMercator will initialize with default values
         var zoomLevels = ReadZoomLevels(connection);
 
         var format = ReadFormat(connection); // we really only want this to be pbf, and if it is not, that is an issue
 
-        var extent = ReadExtent(connection);
+        var extent = ReadExtent(connection, determineExtent);
 
         if (determineZoomLevelsFromTilesTable)
             zoomLevels = ReadZoomLevelsFromTilesTable(connection);
@@ -147,8 +146,14 @@ public class MvtVectorTileSource : ITileSource
         }
     }
 
-    private static Extent ReadExtent(SQLiteConnection connection)
+    private static Extent ReadExtent(SQLiteConnection connection, bool determineExtent)
     {
+        if (!determineExtent)
+        {
+            return new Extent(-20037508.342789, -20037508.342789, 20037508.342789, 20037508.342789);
+
+        }
+
         const string sql = "SELECT \"value\" FROM metadata WHERE \"name\"=?;";
         try
         {
@@ -212,7 +217,8 @@ public class MvtVectorTileSource : ITileSource
                     _style,
                     canvas,
                     tileInfo.Index.Col, tileInfo.Index.Row, Convert.ToInt32(tileInfo.Index.Level),
-                    256, 256, 1);
+                    256, 256, 1,
+                    whiteListLayers: _whitelist);
             }
             catch(Exception ex)
             {

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using SQLite;
@@ -100,5 +102,38 @@ public class RenderTest
         }
 
         await File.WriteAllBytesAsync("test2.png", tile);
+    }
+
+
+    [Fact]
+    public async Task BasicFactoryRenderTest_WaterOnly()
+    {
+        var canvas = new SkiaCanvas();
+        var style = new VectorStyle(VectorStyleKind.Default);
+
+        string path = "zurich.mbtiles";
+        Assert.True(File.Exists(path));
+
+        SQLiteConnectionString val = new(path, SQLiteOpenFlags.ReadOnly, false);
+        var dataSource = new SqliteDataSource(val);
+        var provider = new VectorTilesSource(dataSource);
+        style.SetSourceProvider("openmaptiles", provider);
+
+        var info = new TileInfo(3, 1, 2, layerWhiteList:["water"]); // australia
+        var tile = await TileRendererFactory.RenderAsync(style, canvas, info);
+
+        Assert.NotNull(tile);
+        Assert.True(tile.Length > 0);
+
+        // tile should be a PNG image
+
+        Assert.True(IsPng(tile));
+
+        if (File.Exists("wateronly.png"))
+        {
+            File.Delete("wateronly.png");
+        }
+
+        await File.WriteAllBytesAsync("wateronly.png", tile);
     }
 }

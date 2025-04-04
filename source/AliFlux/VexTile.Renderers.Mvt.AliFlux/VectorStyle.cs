@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,12 +6,10 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using NLog;
 using SkiaSharp;
-using VexTile.Common;
 using VexTile.Common.Enums;
 using VexTile.Common.Sources;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
-using VexTile.Renderer.Mvt.AliFlux.Sources;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
 
@@ -21,10 +18,10 @@ public class VectorStyle : IVectorStyle
     readonly Logger log = LogManager.GetCurrentClassLogger();
     public string Hash { get; }
     public List<Layer> Layers { get; } = new();
-    public Dictionary<string, Source> Sources { get; } = new();
-    public Dictionary<string, object> Metadata { get; } = new();
+    public Dictionary<string, Source> Sources { get; } = [];
 
-    protected readonly ConcurrentDictionary<string, Brush[]> BrushesCache = new();
+    // leaving this in but it is never used
+    public Dictionary<string, object> Metadata { get; }
 
     public string CustomStyle { get; set; }
 
@@ -59,7 +56,7 @@ public class VectorStyle : IVectorStyle
         // this should all be simplified to a generic template.
         var jObject = JObject.Parse(json);
 
-        if (jObject["metadata"] != null)
+        if (jObject["metadata"] is not null)
         {
             Metadata = jObject["metadata"].ToObject<Dictionary<string, object>>();
         }
@@ -203,9 +200,8 @@ public class VectorStyle : IVectorStyle
 
     public Brush[] GetStyleByType(string type, double zoom, double scale = 1)
     {
-        List<Brush> results = new();
+        List<Brush> results = [];
 
-        int i = 0;
         foreach (var layer in Layers)
         {
             if (layer.Type == type)
@@ -219,24 +215,21 @@ public class VectorStyle : IVectorStyle
 
                 results.Add(ParseStyle(layer, scale, attributes));
             }
-
-            i++;
         }
 
-        return results.ToArray();
+        return [.. results];
     }
 
     public Brush ParseStyle(Layer layer, double scale, Dictionary<string, object> attributes)
     {
         var paintData = layer.Paint;
         var layoutData = layer.Layout;
-        int index = layer.Index;
+        var index = layer.Index;
 
         var brush = new Brush
         {
             ZIndex = index,
             Layer = layer,
-            //GlyphsDirectory = this.FontDirectory
         };
 
         var paint = new Paint();
@@ -249,101 +242,101 @@ public class VectorStyle : IVectorStyle
 
         if (paintData != null)
         {
-            if (paintData.TryGetValue("fill-color", out object fillColorValue))
+            if (paintData.TryGetValue("fill-color", out var fillColorValue))
             {
                 paint.FillColor = ParseColor(GetValue(fillColorValue, attributes));
             }
 
-            if (paintData.TryGetValue("background-color", out object backgroundColorValue))
+            if (paintData.TryGetValue("background-color", out var backgroundColorValue))
             {
                 paint.BackgroundColor = ParseColor(GetValue(backgroundColorValue, attributes));
             }
 
-            if (paintData.TryGetValue("text-color", out object textColorValue))
+            if (paintData.TryGetValue("text-color", out var textColorValue))
             {
                 paint.TextColor = ParseColor(GetValue(textColorValue, attributes));
             }
 
-            if (paintData.TryGetValue("line-color", out object lineColorValue))
+            if (paintData.TryGetValue("line-color", out var lineColorValue))
             {
                 paint.LineColor = ParseColor(GetValue(lineColorValue, attributes));
             }
 
             // --
 
-            if (paintData.TryGetValue("line-pattern", out object linePatternValue))
+            if (paintData.TryGetValue("line-pattern", out var linePatternValue))
             {
                 paint.LinePattern = (string)GetValue(linePatternValue, attributes);
             }
 
-            if (paintData.TryGetValue("background-pattern", out object backgroundPatternValue))
+            if (paintData.TryGetValue("background-pattern", out var backgroundPatternValue))
             {
                 paint.BackgroundPattern = (string)GetValue(backgroundPatternValue, attributes);
             }
 
-            if (paintData.TryGetValue("fill-pattern", out object fillPatternValue))
+            if (paintData.TryGetValue("fill-pattern", out var fillPatternValue))
             {
                 paint.FillPattern = (string)GetValue(fillPatternValue, attributes);
             }
 
             // --
 
-            if (paintData.TryGetValue("text-opacity", out object textOpacityValue))
+            if (paintData.TryGetValue("text-opacity", out var textOpacityValue))
             {
                 paint.TextOpacity = Convert.ToDouble(GetValue(textOpacityValue, attributes));
             }
 
-            if (paintData.TryGetValue("icon-opacity", out object iconOpacityValue))
+            if (paintData.TryGetValue("icon-opacity", out var iconOpacityValue))
             {
                 paint.IconOpacity = Convert.ToDouble(GetValue(iconOpacityValue, attributes));
             }
 
-            if (paintData.TryGetValue("line-opacity", out object lineOpacityValue))
+            if (paintData.TryGetValue("line-opacity", out var lineOpacityValue))
             {
                 paint.LineOpacity = Convert.ToDouble(GetValue(lineOpacityValue, attributes));
             }
 
-            if (paintData.TryGetValue("fill-opacity", out object fillOpacityValue))
+            if (paintData.TryGetValue("fill-opacity", out var fillOpacityValue))
             {
                 paint.FillOpacity = Convert.ToDouble(GetValue(fillOpacityValue, attributes));
             }
 
-            if (paintData.TryGetValue("background-opacity", out object backgroundOpacityValue))
+            if (paintData.TryGetValue("background-opacity", out var backgroundOpacityValue))
             {
                 paint.BackgroundOpacity = Convert.ToDouble(GetValue(backgroundOpacityValue, attributes));
             }
 
             // --
 
-            if (paintData.TryGetValue("line-width", out object lineWidthValue))
+            if (paintData.TryGetValue("line-width", out var lineWidthValue))
             {
                 paint.LineWidth = Convert.ToDouble(GetValue(lineWidthValue, attributes)) * scale; // * screenScale;
             }
 
-            if (paintData.TryGetValue("line-offset", out object lineOffsetValue))
+            if (paintData.TryGetValue("line-offset", out var lineOffsetValue))
             {
                 paint.LineOffset = Convert.ToDouble(GetValue(lineOffsetValue, attributes)) * scale; // * screenScale;
             }
 
-            if (paintData.TryGetValue("line-dasharray", out object lineDashArrayValue))
+            if (paintData.TryGetValue("line-dasharray", out var lineDashArrayValue))
             {
-                object[] array = (GetValue(lineDashArrayValue, attributes) as object[]);
+                var array = (GetValue(lineDashArrayValue, attributes) as object[]);
                 paint.LineDashArray = array.Select(item => Convert.ToDouble(item) * scale).ToArray();
             }
 
             // --
 
-            if (paintData.TryGetValue("text-halo-color", out object textHaloColorValue))
+            if (paintData.TryGetValue("text-halo-color", out var textHaloColorValue))
             {
                 paint.TextStrokeColor = ParseColor(GetValue(textHaloColorValue, attributes));
             }
 
-            if (paintData.TryGetValue("text-halo-width", out object textHaloWidthValue))
+            if (paintData.TryGetValue("text-halo-width", out var textHaloWidthValue))
             {
                 paint.TextStrokeWidth = Convert.ToDouble(GetValue(textHaloWidthValue, attributes)) * scale;
             }
 
-            if (paintData.TryGetValue("text-halo-blur", out object textHaloBlurValue))
+            if (paintData.TryGetValue("text-halo-blur", out var textHaloBlurValue))
             {
                 paint.TextStrokeBlur = Convert.ToDouble(GetValue(textHaloBlurValue, attributes)) * scale;
             }
@@ -351,9 +344,9 @@ public class VectorStyle : IVectorStyle
 
         if (layoutData != null)
         {
-            if (layoutData.TryGetValue("line-cap", out object lineCapValue))
+            if (layoutData.TryGetValue("line-cap", out var lineCapValue))
             {
-                string value = (string)GetValue(lineCapValue, attributes);
+                var value = (string)GetValue(lineCapValue, attributes);
                 if (value == "butt")
                 {
                     paint.LineCap = PenLineCap.Flat;
@@ -368,12 +361,12 @@ public class VectorStyle : IVectorStyle
                 }
             }
 
-            if (layoutData.TryGetValue("visibility", out object visibilityValue))
+            if (layoutData.TryGetValue("visibility", out var visibilityValue))
             {
                 paint.Visibility = ((string)GetValue(visibilityValue, attributes)) == "visible";
             }
 
-            if (layoutData.TryGetValue("text-field", out object value11))
+            if (layoutData.TryGetValue("text-field", out var value11))
             {
                 brush.TextField = (string)GetValue(value11, attributes);
 
@@ -383,45 +376,45 @@ public class VectorStyle : IVectorStyle
                     pattern: @"\{([A-Za-z0-9\-\:_]+)\}",
                     evaluator: m =>
                     {
-                        string key = StripBraces(m.Value);
-                        if (attributes.TryGetValue(key, out object attribute))
+                        var key = StripBraces(m.Value);
+                        if (attributes.TryGetValue(key, out var attribute))
                         {
                             return attribute.ToString();
                         }
 
-                        return "";
+                        return string.Empty;
                     }).Trim();
             }
 
-            if (layoutData.TryGetValue("text-font", out object textFornValue))
+            if (layoutData.TryGetValue("text-font", out var textFornValue))
             {
                 paint.TextFont = ((object[])GetValue(textFornValue, attributes)).Select(item => (string)item).ToArray();
             }
 
-            if (layoutData.TryGetValue("text-size", out object textSizeValue))
+            if (layoutData.TryGetValue("text-size", out var textSizeValue))
             {
                 paint.TextSize = Convert.ToDouble(GetValue(textSizeValue, attributes)) * scale;
             }
 
-            if (layoutData.TryGetValue("text-max-width", out object testMaxWidthValue))
+            if (layoutData.TryGetValue("text-max-width", out var testMaxWidthValue))
             {
                 paint.TextMaxWidth = Convert.ToDouble(GetValue(testMaxWidthValue, attributes)) * scale; // * screenScale;
             }
 
-            if (layoutData.TryGetValue("text-offset", out object textOffsetValue))
+            if (layoutData.TryGetValue("text-offset", out var textOffsetValue))
             {
-                object[] value = (object[])GetValue(textOffsetValue, attributes);
+                var value = (object[])GetValue(textOffsetValue, attributes);
                 paint.TextOffset = new Point(Convert.ToDouble(value[0]) * scale, Convert.ToDouble(value[1]) * scale);
             }
 
-            if (layoutData.TryGetValue("text-optional", out object textOptionalValue))
+            if (layoutData.TryGetValue("text-optional", out var textOptionalValue))
             {
                 paint.TextOptional = (bool)(GetValue(textOptionalValue, attributes));
             }
 
-            if (layoutData.TryGetValue("text-transform", out object textTransformValue))
+            if (layoutData.TryGetValue("text-transform", out var textTransformValue))
             {
-                string value = (string)GetValue(textTransformValue, attributes);
+                var value = (string)GetValue(textTransformValue, attributes);
                 if (value == "none")
                 {
                     paint.TextTransform = TextTransform.None;
@@ -436,12 +429,12 @@ public class VectorStyle : IVectorStyle
                 }
             }
 
-            if (layoutData.TryGetValue("icon-size", out object iconSizeValue))
+            if (layoutData.TryGetValue("icon-size", out var iconSizeValue))
             {
                 paint.IconScale = Convert.ToDouble(GetValue(iconSizeValue, attributes)) * scale;
             }
 
-            if (layoutData.TryGetValue("icon-image", out object iconImageValue))
+            if (layoutData.TryGetValue("icon-image", out var iconImageValue))
             {
                 paint.IconImage = (string)GetValue(iconImageValue, attributes);
             }
@@ -653,7 +646,6 @@ public class VectorStyle : IVectorStyle
         return true;
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>")]
     protected Layer[] FindLayers(double zoom, string layerName, Dictionary<string, object> attributes)
     {
         List<Layer> result = new List<Layer>();
@@ -913,11 +905,14 @@ public class VectorStyle : IVectorStyle
             return array.Select(item => GetValue(item, attributes)).ToArray();
         }
 
-        if (token is Dictionary<string, object> dict && dict.TryGetValue("stops", out object stopsValue) && stopsValue is object[] stops)
+        if (token is Dictionary<string, object> dict && dict.TryGetValue("stops", out var stopsValue) && stopsValue is object[] stops)
         {
             // if it has stops, it's interpolation domain now :P
             //var pointStops = stops.Select(item => new Tuple<double, JToken>((item as JArray)[0].Value<double>(), (item as JArray)[1])).ToList();
-            var pointStops = stops.Select(item => new Tuple<double, object>(Convert.ToDouble((item as object[])[0]), (item as object[])[1])).ToList();
+
+            var pointStops = stops.Select(item => new Tuple<double, object>(
+                Convert.ToDouble((item as object[])[0]), (item as object[])[1]))
+                .ToList();
 
             double zoom = (double)attributes["$zoom"];
             double minZoom = pointStops.First().Item1;

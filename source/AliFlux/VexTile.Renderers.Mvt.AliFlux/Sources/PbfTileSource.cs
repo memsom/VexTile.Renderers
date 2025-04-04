@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using VexTile.Mapbox.VectorTile.Geometry;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;

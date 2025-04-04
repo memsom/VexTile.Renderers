@@ -7,17 +7,17 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 // ReSharper disable once InconsistentNaming
 public static class SKColorFactory
 {
-    private static readonly Dictionary<string, SKColor> _colours = new();
+    private static readonly Dictionary<string, SKColor> Colours = new();
 
     // try to centralise this as tracking down where colours ar made is hard
     public static SKColor MakeColor(byte red, byte green, byte blue, byte alpha = 255, [CallerMemberName] string callerName = "<unknown>")
     {
         string key = MakeKey(red, green, blue, alpha);
 
-        if (!_colours.TryGetValue(key, out SKColor color))
+        if (!Colours.TryGetValue(key, out SKColor color))
         {
             color = new SKColor(red, green, blue, alpha);
-            _colours[key] = color;
+            Colours[key] = color;
 
 #if DEBUG_COLORS
             log.Debug($"{callerName} -> Created {key} :: SKColorFactory.MakeColor({red}, {green}, {blue}, {alpha})");
@@ -44,9 +44,9 @@ public static class SKColorFactory
     {
         string key = MakeKey(color.Red, color.Green, color.Blue, color.Alpha);
 
-        if (!_colours.TryGetValue(key, out _))
+        if (!Colours.TryGetValue(key, out _))
         {
-            _colours.Add(key, color);
+            Colours.Add(key, color);
         }
         return color;
     }
