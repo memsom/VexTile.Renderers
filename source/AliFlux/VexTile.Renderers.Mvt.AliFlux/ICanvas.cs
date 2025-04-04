@@ -10,11 +10,13 @@ public interface ICanvas
 
     void StartDrawing(double width, double height);
 
-    void DrawBackground(Brush style);
+    SKColor BackgroundColor { get; }
+
+    void DrawBackground(SKColor color);
 
     void DrawLineString(List<Point> geometry, Brush style);
 
-    void DrawPolygon(List<Point> geometry, Brush style);
+    void DrawPolygon(List<Point> geometry, Brush style, SKColor? background);
 
     void DrawPoint(Point geometry, Brush style);
 

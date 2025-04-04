@@ -8,7 +8,7 @@ namespace VexTile.Renderer.Mvt.AliFlux;
 
 internal static class LineClipper
 {
-    static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+    private static readonly NLog.Logger Log = NLog.LogManager.GetCurrentClassLogger();
 
     private static OutCode ComputeOutCode(double x, double y, Rect r)
     {
@@ -37,7 +37,7 @@ internal static class LineClipper
         return code;
     }
 
-    private static OutCode ComputeOutCode(Point p, Rect r) { return ComputeOutCode(p.X, p.Y, r); }
+    private static OutCode ComputeOutCode(Point p, Rect r) => ComputeOutCode(p.X, p.Y, r);
 
     private static Point CalculateIntersection(Rect r, Point p1, Point p2, OutCode clipTo)
     {
@@ -216,7 +216,7 @@ internal static class LineClipper
             }
             else
             {
-                log.Debug("Segment is null");
+                Log.Debug("Segment is null");
             }
         }
 

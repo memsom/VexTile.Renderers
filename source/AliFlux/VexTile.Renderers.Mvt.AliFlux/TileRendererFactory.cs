@@ -11,7 +11,6 @@ using SkiaSharp;
 using VexTile.Renderer.Mvt.AliFlux.Drawing;
 using VexTile.Renderer.Mvt.AliFlux.Enums;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
-using Point = VexTile.Renderer.Mvt.AliFlux.Drawing.Point;
 
 namespace VexTile.Renderer.Mvt.AliFlux;
 
@@ -33,6 +32,7 @@ public static class TileRendererFactory
     /// <param name="sizeY">optional height size for the tile, defaults to 512</param>
     /// <param name="scale">optional scale, defaults to 1</param>
     /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
+    /// <param name="overrideBackground">override the default background color</param>
     /// <returns>a png</returns>
     public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null, Color? overrideBackground = null) =>
         await RenderAsync(style, canvas,
@@ -44,6 +44,7 @@ public static class TileRendererFactory
     /// <param name="style">the style to apply</param>
     /// <param name="canvas">the canvas to draw on</param>
     /// <param name="tileData">contains all the tile information</param>
+    /// <param name="overrideBackground">override the default background color</param>
     /// <returns>a png</returns>
     public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData, Color? overrideBackground = null)
     {
@@ -167,7 +168,9 @@ public static class TileRendererFactory
                                     VectorTileFeature = feature,
                                     Geometry = feature.Geometry,
                                     Brush = brush,
-                                    Id = $"{layer.ID} :: {layer.SourceName} :: {layer.SourceLayer}"
+                                    LayerId = layer.ID,
+                                    SourceName = layer.SourceName,
+                                    SourceLayer = layer.SourceLayer,
                                 });
                             }
                         }
@@ -184,15 +187,15 @@ public static class TileRendererFactory
                         brush.Paint.BackgroundColor = new SKColor(c.R, c.G, c.B, c.A);
                     }
 
-                    canvas.DrawBackground(brush);
+                    canvas.DrawBackground(brush.Paint.BackgroundColor);
                 }
             }
         }
 
-        return RenderVisualLayers(canvas, visualLayers, tileData);
+        return RenderVisualLayers(canvas, visualLayers);
     }
 
-    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers, TileInfo tileData)
+    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers)
     {
         // defered rendering to preserve text drawing order
         foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
@@ -228,7 +231,15 @@ public static class TileRendererFactory
                     {
                         foreach (var polygon in geometry)
                         {
-                            canvas.DrawPolygon(polygon, brush);
+                            //we know water is broken, so for now we are special casing it
+                            if(layer.SourceLayer == "water")
+                            {
+                                canvas.DrawPolygon(polygon, brush, canvas.BackgroundColor);
+                            }
+                            else
+                            {
+                                canvas.DrawPolygon(polygon, brush, null);
+                            }
                         }
                     }
                     else if (feature.GeometryType == "Unknown")
