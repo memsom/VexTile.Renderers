@@ -1,6 +1,7 @@
 ﻿// defining this will add a box around the tile boundary and also
 // burn in the XYZ value of the tile. This is very handy for debugging
-//#define USE_DEBUG_BOX
+
+#define USE_DEBUG_BOX
 
 using System;
 using System.Collections.Generic;
@@ -192,10 +193,18 @@ public static class TileRendererFactory
             }
         }
 
+#if USE_DEBUG_BOX
+        return RenderVisualLayers(canvas, visualLayers, tileData);
+#else
         return RenderVisualLayers(canvas, visualLayers);
+#endif
     }
 
+#if USE_DEBUG_BOX
+    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers, TileInfo tileData)
+#else
     private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers)
+#endif
     {
         // defered rendering to preserve text drawing order
         foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
@@ -232,7 +241,7 @@ public static class TileRendererFactory
                         foreach (var polygon in geometry)
                         {
                             //we know water is broken, so for now we are special casing it
-                            if(layer.SourceLayer == "water")
+                            if (layer.SourceLayer == "water")
                             {
                                 canvas.DrawPolygon(polygon, brush, canvas.BackgroundColor);
                             }

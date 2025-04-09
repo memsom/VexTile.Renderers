@@ -197,42 +197,34 @@ public class SkiaCanvas : ICanvas
         return SKTextAlign.Center;
     }
 
-    private SKPaint GetTextStrokePaint(Brush style)
-    {
-        var color = style.Paint.TextStrokeColor;
-
-        var paint = new SKPaint()
+    private SKPaint GetTextStrokePaint(Brush style) =>
+        new()
         {
             IsStroke = true,
             StrokeWidth = (float)style.Paint.TextStrokeWidth,
-            Color = SKColorFactory.MakeColor(color.Red, color.Green, color.Blue, (byte)Clamp(color.Alpha * style.Paint.TextOpacity, 0, 255)),
-            TextSize = (float)style.Paint.TextSize,
+            Color = SKColorFactory.MakeColor(
+                style.Paint.TextStrokeColor,
+                (byte)Clamp(style.Paint.TextStrokeColor.Alpha * style.Paint.TextOpacity, 0, 255)),
+            TextSize = (float)style.Paint.TextSize * 0.825f,
             IsAntialias = true,
             TextEncoding = SKTextEncoding.Utf32,
             TextAlign = ConvertAlignment(style.Paint.TextJustify),
             Typeface = GetFont(style.Paint.TextFont, style),
         };
 
-        return paint;
-    }
-
-    private SKPaint GetTextPaint(Brush style)
-    {
-        var color = style.Paint.TextColor;
-
-        var paint = new SKPaint()
+    private SKPaint GetTextPaint(Brush style) =>
+        new()
         {
-            Color = SKColorFactory.MakeColor(color.Red, color.Green, color.Blue, (byte)Clamp(color.Alpha * style.Paint.TextOpacity, 0, 255)),
-            TextSize = (float)style.Paint.TextSize,
+            Color = SKColorFactory.MakeColor(
+                style.Paint.TextColor,
+                (byte)Clamp(style.Paint.TextColor.Alpha * style.Paint.TextOpacity, 0, 255)),
+            TextSize = (float)style.Paint.TextSize * 0.825f,
             IsAntialias = true,
             TextEncoding = SKTextEncoding.Utf32,
             TextAlign = ConvertAlignment(style.Paint.TextJustify),
             Typeface = GetFont(style.Paint.TextFont, style),
             HintingLevel = SKPaintHinting.Normal,
         };
-
-        return paint;
-    }
 
     private string TransformText(string text, Brush style)
     {
@@ -266,7 +258,7 @@ public class SkiaCanvas : ICanvas
 
             if (lineLength == restOfText.Length)
             {
-                // its the end
+                // it's the end
                 brokenText += restOfText.Trim();
                 break;
             }
@@ -339,7 +331,6 @@ public class SkiaCanvas : ICanvas
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "<Pending>")]
     protected SKTypeface QualifyTypeface(string text, SKTypeface typeface)
     {
         ushort[] glyphs = new ushort[typeface.CountGlyphs(text)];
@@ -374,7 +365,9 @@ public class SkiaCanvas : ICanvas
             {
                 // still causing issues
                 // so we cut the rest
-                charIdx = (glyphs.Length > 0) ? glyphs.Length : 0;
+                charIdx = (glyphs.Length > 0)
+                    ? glyphs.Length
+                    : 0;
 
                 style.Text = style.Text.Substring(0, charIdx);
             }
@@ -386,7 +379,7 @@ public class SkiaCanvas : ICanvas
         if (style.Paint.TextOptional)
         {
             //  check symbol collision
-            //return;
+            return;
         }
 
         var paint = GetTextPaint(style);
@@ -403,7 +396,7 @@ public class SkiaCanvas : ICanvas
             byte[] bytes = Encoding.UTF32.GetBytes(biggestLine);
 
             int twidth = (int)(paint.MeasureText(bytes));
-            int left = (int)(geometry.X - twidth / 2);
+            int left = (int)(geometry.X - twidth / 2.0);
             int top = (int)(geometry.Y - style.Paint.TextSize / 2 * allLines.Length);
             int theight = (int)(style.Paint.TextSize * allLines.Length);
 
@@ -551,7 +544,7 @@ public class SkiaCanvas : ICanvas
 
         var bounds = path.Bounds;
 
-        double hedge = 2;
+        double hedge = 4;
 
         double left = bounds.Left - style.Paint.TextSize - hedge;
         double top = bounds.Top - style.Paint.TextSize - hedge;

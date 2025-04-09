@@ -9,6 +9,9 @@ public static class SKColorFactory
 {
     private static readonly Dictionary<string, SKColor> Colours = new();
 
+    public static SKColor MakeColor(SKColor color, byte alpha = 255, [CallerMemberName] string callerName = "<unknown>")
+        => MakeColor(color.Red, color.Green, color.Blue, alpha, callerName);
+
     // try to centralise this as tracking down where colours ar made is hard
     public static SKColor MakeColor(byte red, byte green, byte blue, byte alpha = 255, [CallerMemberName] string callerName = "<unknown>")
     {

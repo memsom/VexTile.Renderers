@@ -61,8 +61,6 @@ public class VectorStyle : IVectorStyle
             Metadata = jObject["metadata"].ToObject<Dictionary<string, object>>();
         }
 
-        //List<string> fontNames = new List<string>();
-
 
         if (jObject["sources"] is { } sources)
         {
@@ -386,9 +384,9 @@ public class VectorStyle : IVectorStyle
                     }).Trim();
             }
 
-            if (layoutData.TryGetValue("text-font", out var textFornValue))
+            if (layoutData.TryGetValue("text-font", out var textFortValue))
             {
-                paint.TextFont = ((object[])GetValue(textFornValue, attributes)).Select(item => (string)item).ToArray();
+                paint.TextFont = ((object[])GetValue(textFortValue, attributes)).Select(item => (string)item).ToArray();
             }
 
             if (layoutData.TryGetValue("text-size", out var textSizeValue))
