@@ -192,9 +192,10 @@ public class VectorTilesSource : IVectorTileSource
 
     private async Task<VectorTile?> GetCachedVectorTileAsync(int x, int y, int zoom)
     {
+        await _tileCacheLock.WaitAsync();
+        
         try
         {
-            await _tileCacheLock.WaitAsync();
             var key = x + "," + y + "," + zoom;
             if (tileCache.TryGetValue(key, out var existingTile))
             {
@@ -219,12 +220,7 @@ public class VectorTilesSource : IVectorTileSource
     }
 
     public Task<byte[]> GetTileAsync(int x, int y, int zoom)
-    {
-        if (GetRawTile(x, y, zoom) is { } rawTile)
-        {
-            return Task.FromResult(rawTile);
-        }
-
-        return Task.FromResult(Array.Empty<byte>());
-    }
+        => GetRawTile(x, y, zoom) is { } rawTile
+           ? Task.FromResult(rawTile)
+           : Task.FromResult(Array.Empty<byte>());
 }
