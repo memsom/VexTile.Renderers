@@ -30,5 +30,5 @@ public interface ICanvas
 
     void DrawDebugBox(TileInfo tileData, SKColor color);
 
-    byte[] FinishDrawing();
+    byte[] ToPngByteArray(int quality = 80);
 }

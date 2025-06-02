@@ -698,12 +698,17 @@ public class SkiaCanvas : ICanvas
         });
     }
 
-    public byte[] FinishDrawing()
+    public byte[] ToPngByteArray(int quality = 80)
     {
         using var image = _surface.Snapshot();
-        using var data = image.Encode(SKEncodedImageFormat.Png, 80);
+        using var data = image.Encode(SKEncodedImageFormat.Png, quality);
         using var result = new MemoryStream();
         data.SaveTo(result);
         return result.ToArray();
+    }
+
+    public SKImage ToSKImage()
+    {
+        return _surface.Snapshot();
     }
 }

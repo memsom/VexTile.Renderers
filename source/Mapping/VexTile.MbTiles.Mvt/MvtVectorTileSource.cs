@@ -208,19 +208,20 @@ public class MvtVectorTileSource : ITileSource
         if (IsTileIndexValid(index))
         {
             byte[] result;
-            
+
             var canvas = new SkiaCanvas();
 
             try
             {
-                result = await TileRendererFactory.RenderAsync(
+                await TileRendererFactory.RenderAsync(
                     _style,
                     canvas,
                     tileInfo.Index.Col, tileInfo.Index.Row, Convert.ToInt32(tileInfo.Index.Level),
                     256, 256, 1,
                     whiteListLayers: _whitelist);
+                result = canvas.ToPngByteArray();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
