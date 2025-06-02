@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using VexTile.Common.Data;
 using VexTile.Common.Sources;
@@ -114,7 +115,7 @@ public class VectorTilesSource : IVectorTileSource
 
     public async Task<VectorTile?> GetVectorTileAsync(int x, int y, int zoom)
     {
-        Rect extent = new (0, 0, 1, 1);
+        Rect extent = new(0, 0, 1, 1);
         var overZoomed = false;
 
         if (zoom > MaxZoom)
@@ -173,7 +174,7 @@ public class VectorTilesSource : IVectorTileSource
 
         try
         {
-            if (await GetCachedVectorTileAsync(x, y, zoom) is {} cachedTile)
+            if (await GetCachedVectorTileAsync(x, y, zoom) is { } cachedTile)
             {
                 cachedTile.IsOverZoomed = overZoomed;
                 return cachedTile.ApplyExtent(extent);
@@ -187,43 +188,43 @@ public class VectorTilesSource : IVectorTileSource
         return null;
     }
 
-    private readonly object keyLocker = new();
+    private readonly SemaphoreSlim _tileCacheLock = new(1, 1);
 
     private async Task<VectorTile?> GetCachedVectorTileAsync(int x, int y, int zoom)
     {
-        return await Task.Run(() =>
+        try
         {
+            await _tileCacheLock.WaitAsync();
             var key = x + "," + y + "," + zoom;
-
-            lock (keyLocker)
+            if (tileCache.TryGetValue(key, out var existingTile))
             {
-                if (tileCache.TryGetValue(key, out var existingTile))
-                {
-                    return existingTile;
-                }
-
-                if (GetRawTile(x, y, zoom) is { } rawTileStream)
-                {
-                    var pbfTileProvider = new PbfTileSource(rawTileStream);
-                    var tile = pbfTileProvider.GetTileAsync().Result; // we need to make this use await
-                    tileCache[key] = tile;
-
-                    return tile;
-                }
-
-                return null;
+                return existingTile;
             }
-        });
+
+            if (GetRawTile(x, y, zoom) is { } rawTileStream)
+            {
+                var pbfTileProvider = new PbfTileSource(rawTileStream);
+                var tile = await pbfTileProvider.GetTileAsync();
+                tileCache[key] = tile;
+
+                return tile;
+            }
+        }
+        finally
+        {
+            _tileCacheLock.Release();
+        }
+
+        return null;
     }
 
-    public async Task<byte[]> GetTileAsync(int x, int y, int zoom) =>
-        await Task.Run(() =>
+    public Task<byte[]> GetTileAsync(int x, int y, int zoom)
+    {
+        if (GetRawTile(x, y, zoom) is { } rawTile)
         {
-            if (GetRawTile(x, y, zoom) is { } rawTile)
-            {
-                return rawTile;
-            }
+            return Task.FromResult(rawTile);
+        }
 
-            return [];
-        });
+        return Task.FromResult(Array.Empty<byte>());
+    }
 }
