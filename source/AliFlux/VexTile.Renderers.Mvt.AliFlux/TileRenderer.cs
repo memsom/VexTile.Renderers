@@ -29,18 +29,24 @@ public class TileRenderer : ITileRenderer
         style.SetSourceProvider(styleProviderString, provider);
     }
 
-    public Task<byte[]> RenderTileAsync(
+    public async Task<byte[]> RenderTileAsync(
         ICanvas canvas,
         int x, int y, double zoom,
         double sizeX = 512, double sizeY = 512,
         double scale = 1,
-        List<string> whiteListLayers = null) =>
-        TileRendererFactory.RenderAsync(style, canvas, new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers));
+        List<string> whiteListLayers = null)
+    {
+        await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers));
+        return canvas.ToPngByteArray();
+    }
 
-    public Task<byte[]> RenderTileAsync(
+    public async Task<byte[]> RenderTileAsync(
         ICanvas canvas,
-        TileInfo tileData) =>
-        TileRendererFactory.RenderAsync(style, canvas, tileData);
+        TileInfo tileData)
+    {
+        await TileRendererFactory.RenderAsync(style, canvas, tileData);
+        return canvas.ToPngByteArray();
+    }
 
     protected virtual void Dispose(bool disposing)
     {

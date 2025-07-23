@@ -34,7 +34,7 @@ public static class TileRendererFactory
     /// <param name="whiteListLayers">optional whitelist to reduce layers to render</param>
     /// <param name="overrideBackground">override the default background color</param>
     /// <returns>a png</returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null, Color? overrideBackground = null) =>
+    public static async Task RenderAsync(VectorStyle style, ICanvas canvas, int x, int y, double zoom, double sizeX = 512, double sizeY = 512, double scale = 1, List<string> whiteListLayers = null, Color? overrideBackground = null) =>
         await RenderAsync(style, canvas,
             new TileInfo(x, y, zoom, sizeX, sizeY, scale, whiteListLayers), overrideBackground);
 
@@ -46,7 +46,18 @@ public static class TileRendererFactory
     /// <param name="tileData">contains all the tile information</param>
     /// <param name="overrideBackground">override the default background color</param>
     /// <returns>a png</returns>
-    public static async Task<byte[]> RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData, Color? overrideBackground = null)
+    public static async Task RenderAsync(VectorStyle style, ICanvas canvas, TileInfo tileData, Color? overrideBackground = null)
+    {
+        await RenderToCanvasAsync(style, canvas, tileData, overrideBackground).ConfigureAwait(false);
+    }
+    /// <summary>
+    /// This is basically to avoid a lot of boilerplate
+    /// </summary>
+    /// <param name="style">the style to apply</param>
+    /// <param name="canvas">the canvas to draw on</param>
+    /// <param name="tileData">contains all the tile information</param>
+    /// <param name="overrideBackground">override the default background color</param>
+    public static async Task RenderToCanvasAsync(VectorStyle style, ICanvas canvas, TileInfo tileData, Color? overrideBackground = null)
     {
         Dictionary<Source, VectorTile> vectorTileCache = new();
         Dictionary<string, List<VectorTileLayer>> categorizedVectorLayers = new();
@@ -102,7 +113,7 @@ public static class TileRendererFactory
 
                     if (tile == null)
                     {
-                        return null;
+                        return;
                     }
 
                     // magic sauce! :p
@@ -192,12 +203,12 @@ public static class TileRendererFactory
             }
         }
 
-        return RenderVisualLayers(canvas, visualLayers);
+        RenderVisualLayers(canvas, visualLayers);                
     }
 
-    private static byte[] RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers)
+    private static void RenderVisualLayers(ICanvas canvas, List<VisualLayer> visualLayers)
     {
-        // defered rendering to preserve text drawing order
+        // deferred rendering to preserve text drawing order
         foreach (var layer in visualLayers.OrderBy(item => item.Brush.ZIndex))
         {
             if (layer.Type == VisualLayerType.Vector)
@@ -301,7 +312,5 @@ public static class TileRendererFactory
 #if USE_DEBUG_BOX
         canvas.DrawDebugBox(tileData, SKColors.Black);
 #endif
-
-        return canvas.FinishDrawing();
     }
 }

@@ -1,13 +1,8 @@
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Threading.Tasks;
 using SQLite;
 using VexTile.Common.Enums;
 using VexTile.Data.Sources;
 using VexTile.Renderer.Mvt.AliFlux;
 using VexTile.Renderer.Mvt.AliFlux.Sources;
-using Xunit;
 
 namespace VexTile.Renderers.Mvt.AliFlux.Tests;
 
@@ -29,7 +24,8 @@ public class RenderTest
         var dataSource = new SqliteDataSource(val);
         var provider = new VectorTilesSource(dataSource);
         style.SetSourceProvider("openmaptiles", provider);
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0, 0, 0));
+        await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0, 0, 0));
+        var tile = canvas.ToPngByteArray();
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
@@ -59,7 +55,8 @@ public class RenderTest
 
         var provider = new PbfTileSource(bytes);
         style.SetSourceProvider("openmaptiles", provider);
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0));
+        await TileRendererFactory.RenderAsync(style, canvas, new TileInfo(0));
+        var tile = canvas.ToPngByteArray();
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
@@ -120,7 +117,8 @@ public class RenderTest
         style.SetSourceProvider("openmaptiles", provider);
 
         var info = new TileInfo(3, 1, 2, layerWhiteList:["water"]); // australia
-        var tile = await TileRendererFactory.RenderAsync(style, canvas, info);
+        await TileRendererFactory.RenderAsync(style, canvas, info);
+        var tile = canvas.ToPngByteArray();
 
         Assert.NotNull(tile);
         Assert.True(tile.Length > 0);
