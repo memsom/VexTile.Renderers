@@ -45,7 +45,7 @@ public static class SKColorFactory
         // Use the packed ARGB from the color directly
         uint key = (uint)color;
 
-        Colours[key] = color;
+        _ = Colours.TryAdd(key, color);
 
 #if DEBUG_COLORS
         var hex = MakeKeyHex(color.Red, color.Green, color.Blue, color.Alpha);
