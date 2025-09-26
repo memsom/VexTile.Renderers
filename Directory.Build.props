@@ -29,4 +29,8 @@
         -->
         <NoWarn>$(NoWarn);NU1803;NU1701;NU1702;S112,S1135;S1066,S3925,S1116,S1075;NU1009</NoWarn>
     </PropertyGroup>
+
+  <PropertyGroup>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
 </Project>

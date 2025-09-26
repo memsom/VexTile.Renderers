@@ -10,20 +10,28 @@ on:
 
 jobs:
   nuget-publish:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET (8 and 9)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: |
+            9.0.304
+            8.0.407
 
-      - name: Pack solution
-        run: dotnet pack VexTile.Renderers.sln -c Release -o nugets
+      - name: Restore
+        run: dotnet restore VexTile.Renderers.sln
+
+      - name: Build (Release)
+        run: dotnet build VexTile.Renderers.sln -c Release -p:ContinuousIntegrationBuild=true --no-restore
+
+      - name: Pack (no build)
+        run: dotnet pack VexTile.Renderers.sln -c Release -o nugets --no-build
 
       - name: Push to NuGet
-        if: ${{ inputs.release_nugets }} 
-        run: nuget push "nugets\**\*.nupkg" -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_APIKEY}}
+        if: ${{ inputs.release_nugets }}
+        run: dotnet nuget push "nugets/*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key "${{ secrets.NUGET_APIKEY }}" --skip-duplicate
