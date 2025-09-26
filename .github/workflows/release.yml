@@ -22,10 +22,12 @@ jobs:
           dotnet-version: |
             9.0.x
             8.0.x
-          cache: true
+
+      - name: Restore
+        run: dotnet restore VexTile.Renderers.sln
 
       - name: Build (Release)
-        run: dotnet build VexTile.Renderers.sln -c Release -p:ContinuousIntegrationBuild=true
+        run: dotnet build VexTile.Renderers.sln -c Release -p:ContinuousIntegrationBuild=true --no-restore
 
       - name: Pack (no build)
         run: dotnet pack VexTile.Renderers.sln -c Release -o nugets --no-build
