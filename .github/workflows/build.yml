@@ -18,8 +18,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            9.0.x
-            8.0.x
+            9.0.304
+            8.0.407
 
       - name: Restore
         run: dotnet restore VexTile.Renderers.sln
