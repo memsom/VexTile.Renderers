@@ -4,21 +4,20 @@
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="BruTile" Version="5.0.6" />
-    <PackageVersion Include="BruTile.MbTiles" Version="5.0.6" />
+    <PackageVersion Include="BruTile" Version="6.0.0-beta.6" />
+    <PackageVersion Include="BruTile.MbTiles" Version="6.0.0-beta.6" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
-    <PackageVersion Include="Mapsui.Avalonia" Version="4.1.8" />
+    <PackageVersion Include="Mapsui.Avalonia" Version="5.0.0-beta.24" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="NLog" Version="5.0.0" />
-    <PackageVersion Include="SkiaSharp" Version="2.88.9" />
-    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="2.88.9" />
+    <PackageVersion Include="SkiaSharp" Version="3.119.0" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux" Version="3.119.0" />
     <PackageVersion Include="sqlite-net-pcl" Version="1.9.172" />
-    <PackageVersion Include="Svg" Version="3.4.7" />
-    <PackageVersion Include="Svg.Skia" Version="1.0.0.3" />
+    <PackageVersion Include="Svg.Skia" Version="3.0.0" />
     <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
-    <PackageVersion Include="System.Text.Json" Version="6.0.10" />
+    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
     <PackageVersion Include="VexTile.Clipper" Version="6.4.0" />
     <PackageVersion Include="VexTile.Mapbox.VectorTile.ExtensionMethods" Version="1.0.6" />
     <PackageVersion Include="VexTile.Mapbox.VectorTile.Geometry" Version="1.0.6" />
@@ -26,10 +25,10 @@
     <PackageVersion Include="VexTile.Mapbox.VectorTile.VectorTileReader" Version="1.0.6" />
     <PackageVersion Include="xunit" Version="2.5.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.3" />
-    <PackageVersion Include="Avalonia" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Desktop" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.0.10" />
-    <PackageVersion Include="Avalonia.Diagnostics" Version="11.0.10" />
+    <PackageVersion Include="Avalonia" Version="11.3.1" />
+    <PackageVersion Include="Avalonia.Desktop" Version="11.3.1" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="11.3.1" />
+    <PackageVersion Include="Avalonia.Fonts.Inter" Version="11.3.1" />
+    <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.1" />
   </ItemGroup>
 </Project>
