@@ -22,7 +22,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Pack solution
-        run: dotnet pack -c Release -o nugets
+        run: dotnet pack VexTile.Renderers.sln -c Release -o nugets
 
       - name: Push to NuGet
         if: ${{ inputs.release_nugets }} 
