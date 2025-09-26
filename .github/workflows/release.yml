@@ -10,7 +10,7 @@ on:
 
 jobs:
   nuget-publish:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -25,5 +25,5 @@ jobs:
         run: dotnet pack -c Release -o nugets
 
       - name: Push to NuGet
-        if: ${{ inputs.release_nugets }} 
-        run: nuget push "nugets\**\*.nupkg" -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_APIKEY}}
+        if: ${{ inputs.release_nugets }}
+        run: dotnet nuget push "nugets/*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key "${{ secrets.NUGET_APIKEY }}" --skip-duplicate
