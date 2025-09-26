@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{91E5AD39-7402-4D0A-BB0F-9B21C48283F9}"
 	ProjectSection(SolutionItems) = preProject
-		LICENSE = LICENSE
-		README.md = README.md
 		.gitignore = .gitignore
-		images\logo.png = images\logo.png
-		Directory.Packages.props = Directory.Packages.props
+		.github\workflows\build.yml = .github\workflows\build.yml
 		Directory.Build.props = Directory.Build.props
+		Directory.Packages.props = Directory.Packages.props
+		LICENSE = LICENSE
+		images\logo.png = images\logo.png
+		README.md = README.md
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AliFlux", "AliFlux", "{524E5240-2A32-4B31-8329-A6A3CB0ADC5F}"
@@ -39,14 +44,6 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{524E5240-2A32-4B31-8329-A6A3CB0ADC5F} = {E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}
-		{B1E58241-A026-4DF9-8EC6-7613CC309591} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
-		{8581D51C-7311-41B0-A2C2-AE479F0844AF} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
-		{8F525597-1FBA-476F-8FB7-70397910C126} = {B93F42B4-7405-402D-BE86-0940BD932412}
-		{7F818319-AA94-4F81-B0F4-68A5D161228C} = {91E5AD39-7402-4D0A-BB0F-9B21C48283F9}
-		{1380B84F-30EF-4E89-8D66-338D45428F58} = {B93F42B4-7405-402D-BE86-0940BD932412}
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B1E58241-A026-4DF9-8EC6-7613CC309591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B1E58241-A026-4DF9-8EC6-7613CC309591}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -72,5 +69,19 @@ Global
 		{1380B84F-30EF-4E89-8D66-338D45428F58}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1380B84F-30EF-4E89-8D66-338D45428F58}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1380B84F-30EF-4E89-8D66-338D45428F58}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{524E5240-2A32-4B31-8329-A6A3CB0ADC5F} = {E18861F9-FDA0-45AE-92FD-CA6FB4A02E36}
+		{B1E58241-A026-4DF9-8EC6-7613CC309591} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
+		{8581D51C-7311-41B0-A2C2-AE479F0844AF} = {524E5240-2A32-4B31-8329-A6A3CB0ADC5F}
+		{8F525597-1FBA-476F-8FB7-70397910C126} = {B93F42B4-7405-402D-BE86-0940BD932412}
+		{7F818319-AA94-4F81-B0F4-68A5D161228C} = {91E5AD39-7402-4D0A-BB0F-9B21C48283F9}
+		{1380B84F-30EF-4E89-8D66-338D45428F58} = {B93F42B4-7405-402D-BE86-0940BD932412}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B000247-497A-4B15-94E1-D9FCC04F6402}
 	EndGlobalSection
 EndGlobal

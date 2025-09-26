@@ -1,0 +1,29 @@
+name: Release to NuGet
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_nugets:
+        description: 'release to nuget.org'
+        required: true
+        type: boolean 
+
+jobs:
+  nuget-publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Pack solution
+        run: dotnet pack VexTile.Renderers.sln -c Release -o nugets
+
+      - name: Push to NuGet
+        if: ${{ inputs.release_nugets }} 
+        run: nuget push "nugets\**\*.nupkg" -Source 'https://api.nuget.org/v3/index.json' -ApiKey ${{secrets.NUGET_APIKEY}}
