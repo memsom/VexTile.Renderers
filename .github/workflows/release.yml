@@ -16,13 +16,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET (8 and 9)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: |
+            9.0.x
+            8.0.x
 
-      - name: Pack solution
-        run: dotnet pack VexTile.Renderers.sln -c Release -o nugets
+      - name: Restore
+        run: dotnet restore VexTile.Renderers.sln
+
+      - name: Build
+        run: dotnet build VexTile.Renderers.sln -c Release -p:ContinuousIntegrationBuild=true --no-restore
+
+      - name: Pack
+        run: dotnet pack VexTile.Renderers.sln -c Release -o nugets --no-build
 
       - name: Push to NuGet
         if: ${{ inputs.release_nugets }}
