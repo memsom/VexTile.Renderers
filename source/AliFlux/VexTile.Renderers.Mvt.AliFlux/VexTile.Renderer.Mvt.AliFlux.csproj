@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <Configurations>Debug;Release</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>disable</Nullable>
@@ -187,7 +187,6 @@
         <PackageReference Include="Newtonsoft.Json"/>
         <PackageReference Include="NLog"/>
         <PackageReference Include="SkiaSharp"/>
-        <PackageReference Include="Svg"/>
         <PackageReference Include="Svg.Skia"/>
         <PackageReference Include="System.Text.RegularExpressions"/>
         <PackageReference Include="VexTile.Clipper"/>
